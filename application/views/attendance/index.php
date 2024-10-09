@@ -66,8 +66,8 @@
                                };
                              </script>
                            </div>
-                           <div class="col-lg-5 offset-lg-1 text-center">
-                             <label for="notes" class="float-left">Notes</label>
+                           <div class="col-lg-5 offset-lg-1 text-center mt-4">
+                             <label for="notes" class="float-left">Catatan (Opsional)</label>
                              <textarea maxlength="120" class="form-control mb-4" name="notes" id="notes" rows="3" style="resize: none;"></textarea>
                              <hr>
                              <button type="submit" class="btn btn-info btn-circle" style="font-size: 20px; width: 100px; height: 100px">

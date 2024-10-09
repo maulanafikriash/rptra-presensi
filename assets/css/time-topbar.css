@@ -1,0 +1,6 @@
+@media (max-width: 460px) {
+    #realTimeClock {
+      font-size: 12px;
+      /* Ukuran kecil untuk layar mobile */
+    }
+  }
