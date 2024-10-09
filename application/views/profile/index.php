@@ -4,19 +4,19 @@
   <!-- Page Heading -->
   <div class="row">
     <div class="col-sm-10">
-      <h1 class="h1 mb-4 text-gray-900"><?= $account['name'] ?></h1>
+      <h1 class="h1 mb-4 text-gray-900 account-name"><?= $account['name'] ?></h1>
     </div>
   </div>
   <div class="row">
 
     <!-- left -->
     <div class="col-sm-10 col-md-5 col-lg-4 col-xl-3 offset-sm-1 offset-md-0 offset-lg-0 offset-xl-0">
-      <img src="<?= base_url('images/pp/') . $account['image']; ?>" class="rounded-circle img-thumbnail">
+      <img src="<?= base_url('images/pp/') . $account['image']; ?>" class="rounded-circle img-thumbnail account-image">
     </div>
 
     <!-- right -->
     <div class="col-sm-10 col-md-6 offset-sm-1">
-      <h1 class="h3 text-white bg-info p-1 rounded mt-1 mb-5">Data</h1>
+      <h1 class="h3 text-white bg-info px-3 py-2 rounded mt-1 mb-3 data-pegawai">Data Pegawai</h1>
       <table class="table">
         <tbody>
           <tr>
