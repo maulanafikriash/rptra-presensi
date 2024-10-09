@@ -30,6 +30,7 @@ class Attendance extends CI_Controller
     $d['title'] = 'Form Presensi';
     $d['account'] = $this->Public_model->getAccount($this->session->userdata['username']);
     $d['location'] = $this->db->get('location')->result_array();
+    $d['shift'] = $this->db->get('shift')->result_array();
 
     // If Weekends
     if (is_weekends() == true) {
