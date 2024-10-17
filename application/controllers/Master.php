@@ -65,11 +65,11 @@ class Master extends CI_Controller
     $checkId = $this->db->get_where('department', ['id' => $data['id']])->num_rows();
     if ($checkId > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Failed to add, ID used!</div>');
+      Gagal ditambahkan, ID telah digunakan!</div>');
     } else {
       $this->db->insert('department', $data);
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully added a new department!</div>');
+        Berhasil menambahkan department baru!</div>');
     }
     redirect('master');
   }
@@ -99,7 +99,7 @@ class Master extends CI_Controller
     $data = ['name' => $name];
     $this->db->update('department', $data, ['id' => $d_id]);
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully edited a department!</div>');
+        Berhasil mengedit department!</div>');
     redirect('master');
   }
 
@@ -111,7 +111,7 @@ class Master extends CI_Controller
     // Hapus department setelah menghapus data terkait
     $this->db->delete('department', ['id' => $d_id]);
 
-    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a department!</div>');
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus department!</div>');
     redirect('master');
   }
 
@@ -177,10 +177,10 @@ class Master extends CI_Controller
     $affectedRow = $this->db->affected_rows();
     if ($affectedRow > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully added a new shift!</div>');
+        Berhasil menambahkan shift baru!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Failed to add new shift!</div>');
+      Gagal menambahkan shift baru!</div>');
     }
     redirect('master/shift');
   }
@@ -240,7 +240,7 @@ class Master extends CI_Controller
     $this->db->where('id', $s_id);
     $this->db->update('shift', $set, ['id' => $s_id]);
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully edited a shift!</div>');
+        Berhasil mengedit shift!</div>');
     redirect('master/shift');
   }
 
@@ -256,7 +256,7 @@ class Master extends CI_Controller
     $query = 'ALTER TABLE `shift` AUTO_INCREMENT = 1';
     $this->db->query($query);
 
-    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a shift!</div>');
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus shift!</div>');
     redirect('master/shift');
   }
 
@@ -319,7 +319,7 @@ class Master extends CI_Controller
 
     if ($checkEmail > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Email already used!</div>');
+      Email sudah digunakan!</div>');
       redirect('master/a_employee');
     }
 
@@ -364,10 +364,10 @@ class Master extends CI_Controller
     $rows = $this->db->affected_rows();
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully added a new employee!</div>');
+        Berhasil menambahkan pegawai baru!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to add data!</div>');
+        Gagal menambahkan data!</div>');
     }
     redirect('master/employee');
   }
@@ -446,19 +446,19 @@ class Master extends CI_Controller
     $upd2 = $this->db->affected_rows();
     if ($upd1 > 0 && $upd2 > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Successfully updated an employee!</div>');
+      Berhasil memperbarui seorang pegawai!</div>');
       redirect('master/employee');
     } else if ($upd1 > 0 && $upd2 <= 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Successfully updated an employee!</div>');
+      Berhasil memperbarui seorang pegawai!</div>');
       redirect('master/employee');
     } else if ($upd1  <= 0 && $upd2 > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Successfully updated an employee!</div>');
+      Berhasil memperbarui seorang pegawai!</div>');
       redirect('master/employee');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Failed to update employee\'s data!</div>');
+      Gagal memperbarui data pegawai!</div>');
       redirect('master/employee');
     }
   }
@@ -471,7 +471,7 @@ class Master extends CI_Controller
     // Hapus employee setelah menghapus data terkait
     $this->db->delete('employee', ['id' => $e_id]);
 
-    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted an employee!</div>');
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus seorang pegawai!</div>');
     redirect('master/employee');
   }
 
@@ -513,10 +513,10 @@ class Master extends CI_Controller
 
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-        Successfully added a new location!</div>');
+        Berhasil menambahkan lokasi baru!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to add data!</div>');
+        Gagal menambahkan data!</div>');
     }
     redirect('master/location');
   }
@@ -549,10 +549,10 @@ class Master extends CI_Controller
 
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-          Successfully edited a location!</div>');
+          Berhasil mengedit lokasi!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to edit data!</div>');
+        Gagal mengedit data!</div>');
     }
 
     redirect('master/location');
@@ -638,10 +638,10 @@ class Master extends CI_Controller
     $rows = $this->db->affected_rows();
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-          Successfully created an account!</div>');
+          Berhasil membuat akun!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to create account!</div>');
+        Gagal membuat akun!</div>');
     }
     redirect('master/users');
   }
@@ -671,10 +671,10 @@ class Master extends CI_Controller
     $rows = $this->db->affected_rows();
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-          Successfully edited an account!</div>');
+          Berhasil mengedit akun!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to edit account!</div>');
+        Gagal mengedit akun!</div>');
     }
     redirect('master/users');
   }
@@ -685,10 +685,10 @@ class Master extends CI_Controller
     $rows = $this->db->affected_rows();
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-          Successfully deleted an account!</div>');
+          Berhasil menghapus akun!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-        Failed to delete account!</div>');
+        Gagal menghapus akun!</div>');
     }
     redirect('master/users');
   }

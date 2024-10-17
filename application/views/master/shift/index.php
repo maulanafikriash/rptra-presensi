@@ -50,7 +50,7 @@
                               <i class="fas fa-edit"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/d_shift/') . $sft['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Deleted Shift will lost forever. Still want to delete?')">
+                          <a href="<?= base_url('master/d_shift/') . $sft['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Shift yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
                             <span class="icon text-white" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </span>

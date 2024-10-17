@@ -34,7 +34,7 @@
                       <th>Actions</th>
                     </tr>
                   </thead>
-                 
+
                   <tbody>
                     <?php
                     $i = 1;
@@ -50,7 +50,7 @@
                               <i class="fas fa-edit"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/d_dept/') . $dpt['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Deleted Department will lost forever. Still want to delete?')">
+                          <a href="<?= base_url('master/d_dept/') . $dpt['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Department yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
                             <span class="icon text-white" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </span>
