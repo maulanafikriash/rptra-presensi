@@ -102,19 +102,19 @@ class Master extends CI_Controller
         Successfully edited a department!</div>');
     redirect('master');
   }
-  
+
   public function d_dept($d_id)
   {
-      // Hapus semua data di tabel attendance yang terkait dengan department_id tersebut
-      $this->db->delete('attendance', ['department_id' => $d_id]);
-  
-      // Hapus department setelah menghapus data terkait
-      $this->db->delete('department', ['id' => $d_id]);
-  
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a department!</div>');
-      redirect('master');
+    // Hapus semua data di tabel attendance yang terkait dengan department_id tersebut
+    $this->db->delete('attendance', ['department_id' => $d_id]);
+
+    // Hapus department setelah menghapus data terkait
+    $this->db->delete('department', ['id' => $d_id]);
+
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a department!</div>');
+    redirect('master');
   }
-  
+
   // End of department
 
   public function shift()
@@ -246,20 +246,20 @@ class Master extends CI_Controller
 
   public function d_shift($s_id)
   {
-      // Update shift_id di tabel attendance yang terkait
-      $this->db->where('shift_id', $s_id);
-      $this->db->update('attendance', ['shift_id' => NULL]);
-  
-      // Hapus data shift setelah memperbarui data terkait
-      $this->db->delete('shift', ['id' => $s_id]);
-  
-      $query = 'ALTER TABLE `shift` AUTO_INCREMENT = 1';
-      $this->db->query($query);
-  
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a shift!</div>');
-      redirect('master/shift');
+    // Update shift_id di tabel attendance yang terkait
+    $this->db->where('shift_id', $s_id);
+    $this->db->update('attendance', ['shift_id' => NULL]);
+
+    // Hapus data shift setelah memperbarui data terkait
+    $this->db->delete('shift', ['id' => $s_id]);
+
+    $query = 'ALTER TABLE `shift` AUTO_INCREMENT = 1';
+    $this->db->query($query);
+
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted a shift!</div>');
+    redirect('master/shift');
   }
-  
+
   // End of Shift
 
   public function employee()
@@ -420,7 +420,8 @@ class Master extends CI_Controller
           }
         }
       } else {
-        $image = 'default.png';
+        // Jika tidak ada gambar baru, gunakan gambar lama
+        $image = $d['employee']['image'];
       }
 
       $data = [
@@ -464,16 +465,16 @@ class Master extends CI_Controller
 
   public function d_employee($e_id)
   {
-      // Hapus semua data di tabel users yang terkait dengan employee_id tersebut
-      $this->db->delete('users', ['employee_id' => $e_id]);
-  
-      // Hapus employee setelah menghapus data terkait
-      $this->db->delete('employee', ['id' => $e_id]);
-  
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted an employee!</div>');
-      redirect('master/employee');
+    // Hapus semua data di tabel users yang terkait dengan employee_id tersebut
+    $this->db->delete('users', ['employee_id' => $e_id]);
+
+    // Hapus employee setelah menghapus data terkait
+    $this->db->delete('employee', ['id' => $e_id]);
+
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Successfully deleted an employee!</div>');
+    redirect('master/employee');
   }
-  
+
 
   public function location()
   {
