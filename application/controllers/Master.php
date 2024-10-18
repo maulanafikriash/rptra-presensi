@@ -378,6 +378,12 @@ class Master extends CI_Controller
     $d['employee'] = $this->db->get_where('employee', ['id' => $e_id])->row_array();
     $d['department_current'] = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
     $d['department'] = $this->db->get('department')->result_array();
+    // Jika department saat ini tidak ada (telah dihapus), set department default ke department pertama yang tersedia
+    if (!$d['department_current']) {
+      $d['department_current'] = [
+        'department_id' => $d['department'][0]['id'] // Pilih department pertama
+      ];
+    }
     $d['shift'] = $this->db->get('shift')->result_array();
     $d['account'] = $this->Admin_model->getAdmin($this->session->userdata['username']);
 
@@ -442,23 +448,28 @@ class Master extends CI_Controller
   {
     $this->db->update('employee', $data, ['id' => $e_id]);
     $upd1 = $this->db->affected_rows();
-    $this->db->update('employee_department', $department, ['employee_id' => $e_id]);
-    $upd2 = $this->db->affected_rows();
-    if ($upd1 > 0 && $upd2 > 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
-    } else if ($upd1 > 0 && $upd2 <= 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
-    } else if ($upd1  <= 0 && $upd2 > 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
+
+    // Cek apakah karyawan memiliki department yg terkait
+    $current_department = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
+
+    if ($current_department) {
+      // Jika ada department saat ini, lakukan update
+      $this->db->update('employee_department', $department, ['employee_id' => $e_id]);
     } else {
-      $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Gagal memperbarui data pegawai!</div>');
+      // Jika tidak ada department terkait, lakukan insert department baru
+      $department['employee_id'] = $e_id;
+      $this->db->insert('employee_department', $department);
+    }
+
+    $upd2 = $this->db->affected_rows();
+
+    if ($upd1 == 0 && $upd2 == 0) {
+      $this->session->set_flashdata('message', '<div class="alert alert-info" role="alert">
+       Tidak ada perubahan yang dilakukan pada data pegawai.</div>');
+      redirect('master/e_employee/' . $e_id); // Redirect kembali ke halaman edit
+    } else {
+      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+       Berhasil memperbarui data pegawai!</div>');
       redirect('master/employee');
     }
   }
@@ -471,7 +482,7 @@ class Master extends CI_Controller
     // Hapus employee setelah menghapus data terkait
     $this->db->delete('employee', ['id' => $e_id]);
 
-    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus seorang pegawai!</div>');
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus data pegawai!</div>');
     redirect('master/employee');
   }
 

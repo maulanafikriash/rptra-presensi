@@ -4,12 +4,19 @@
           <!-- Page Heading -->
           <h1 class="h3 mb-4 text-gray-800"><?= $title; ?></h1>
 
-          <a href="<?= base_url('master/employee'); ?>" class="btn btn-secondary btn-icon-split mb-4">
-            <span class="icon text-white">
-              <i class="fas fa-chevron-left"></i>
-            </span>
-            <span class="text">Kembali</span>
-          </a>
+          <div class="row">
+            <div class="col-lg-3">
+              <a href="<?= base_url('master/employee'); ?>" class="btn btn-secondary btn-icon-split mb-4">
+                <span class="icon text-white">
+                  <i class="fas fa-chevron-left"></i>
+                </span>
+                <span class="text">Kembali</span>
+              </a>
+            </div>
+            <div class="col-lg-5 offset-lg-4">
+              <?= $this->session->flashdata('message'); ?>
+            </div>
+          </div>
 
           <?= form_open_multipart('master/e_employee/' . $employee['id']); ?>
           <div class="col-lg p-0">
