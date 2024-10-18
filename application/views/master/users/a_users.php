@@ -8,15 +8,15 @@
             <span class="icon text-white">
               <i class="fas fa-chevron-left"></i>
             </span>
-            <span class="text">Back</span>
+            <span class="text">Kembali</span>
           </a>
           <div class="col-lg-5 p-0">
             <form action="<?= base_url('master/a_users/') . $e_id; ?>" method="POST">
               <div class="card">
                 <h5 class="card-header">Users Master Data</h5>
                 <div class="card-body">
-                  <h5 class="card-title">Add New Users</h5>
-                  <p class="card-text">Form to add new users to system</p>
+                  <h5 class="card-title">Tambah User Baru</h5>
+                  <p class="card-text">Form untuk menambahkan user baru ke sistem</p>
                   <input type="hidden" name="e_id" value="<?= $e_id; ?>">
                   <div class="form-group row">
                     <label for="u_username" class="col-form-label col-lg-4">Username</label>
@@ -36,7 +36,7 @@
                     <span class="icon text-white">
                       <i class="fas fa-plus-circle"></i>
                     </span>
-                    <span class="text">Add to system</span>
+                    <span class="text">Tambahkan ke sistem</span>
                   </button>
             </form>
           </div>
