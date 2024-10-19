@@ -4,12 +4,19 @@
           <!-- Page Heading -->
           <h1 class="h3 mb-4 text-gray-800"><?= $title; ?></h1>
 
-          <a href="<?= base_url('master/employee'); ?>" class="btn btn-secondary btn-icon-split mb-4">
-            <span class="icon text-white">
-              <i class="fas fa-chevron-left"></i>
-            </span>
-            <span class="text">Kembali</span>
-          </a>
+          <div class="row">
+            <div class="col-lg-3">
+              <a href="<?= base_url('master/employee'); ?>" class="btn btn-secondary btn-icon-split mb-4">
+                <span class="icon text-white">
+                  <i class="fas fa-chevron-left"></i>
+                </span>
+                <span class="text">Kembali</span>
+              </a>
+            </div>
+            <div class="col-lg-5 offset-lg-4">
+              <?= $this->session->flashdata('message'); ?>
+            </div>
+          </div>
 
           <?= form_open_multipart('master/e_employee/' . $employee['id']); ?>
           <div class="col-lg p-0">
@@ -95,9 +102,9 @@
                           <label for="s_id" class="col-form-label">Shift</label>
                           <select class="form-control" name="s_id" id="s_id">
                             <?php foreach ($shift as $sft) : ?>
-                              <option value="<?= $sft['id'] ?>" <?php if ($sft['id'] ==  $employee['shift_id']) {
-                                                                  echo 'selected';
-                                                                }; ?>><?= $sft['id'] ?></option>
+                              <option value="<?= $sft['id'] ?>" <?php if ($sft['id'] == $employee['shift_id']) echo 'selected'; ?>>
+                                Shift <?= $sft['id'] ?> = <?= date('H:i', strtotime($sft['start'])) . ' - ' . date('H:i', strtotime($sft['end'])) ?>
+                              </option>
                             <?php endforeach; ?>
                           </select>
                         </div>
@@ -107,9 +114,9 @@
                           <label for="d_id" class="col-form-label">Department</label>
                           <select class="form-control" name="d_id" id="d_id">
                             <?php foreach ($department as $dpt) : ?>
-                              <option value="<?= $dpt['id'] ?>" <?php if ($dpt['id'] ==  $department_current['department_id']) {
-                                                                  echo 'selected';
-                                                                }; ?>><?= $dpt['id'] ?></option>
+                              <option value="<?= $dpt['id'] ?>" <?php if ($dpt['id'] == $department_current['department_id']) echo 'selected'; ?>>
+                                <?= $dpt['id'] ?> - <?= $dpt['name'] ?>
+                              </option>
                             <?php endforeach; ?>
                           </select>
                         </div>

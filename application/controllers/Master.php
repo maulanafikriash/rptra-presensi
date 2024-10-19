@@ -378,6 +378,14 @@ class Master extends CI_Controller
     $d['employee'] = $this->db->get_where('employee', ['id' => $e_id])->row_array();
     $d['department_current'] = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
     $d['department'] = $this->db->get('department')->result_array();
+    // Jika department saat ini tidak ada (telah dihapus), set department default ke department pertama yang tersedia
+    if (!$d['department_current']) {
+      $d['department_current'] = [
+        'department_id' => $d['department'][0]['id'] // Pilih department pertama
+      ];
+    }
+
+    $this->db->select('id, start, end');
     $d['shift'] = $this->db->get('shift')->result_array();
     $d['account'] = $this->Admin_model->getAdmin($this->session->userdata['username']);
 
@@ -442,39 +450,96 @@ class Master extends CI_Controller
   {
     $this->db->update('employee', $data, ['id' => $e_id]);
     $upd1 = $this->db->affected_rows();
-    $this->db->update('employee_department', $department, ['employee_id' => $e_id]);
-    $upd2 = $this->db->affected_rows();
-    if ($upd1 > 0 && $upd2 > 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
-    } else if ($upd1 > 0 && $upd2 <= 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
-    } else if ($upd1  <= 0 && $upd2 > 0) {
-      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-      Berhasil memperbarui seorang pegawai!</div>');
-      redirect('master/employee');
+
+    // Cek apakah karyawan memiliki department yang terkait
+    $current_department = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
+
+    if ($current_department) {
+      if ($current_department['department_id'] != $department['department_id']) {
+        // Reset username menjadi unique (misalnya "reset_[old_username]") dan password di-reset
+        $new_username = 'Reset' . $current_department['department_id'] . $e_id;
+        $this->db->update('users', ['username' => $new_username, 'password' => NULL], ['employee_id' => $e_id]);
+      }
+      $this->db->update('employee_department', $department, ['employee_id' => $e_id]);
     } else {
-      $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-      Gagal memperbarui data pegawai!</div>');
+      // Jika tidak ada department terkait, lakukan insert department baru
+      $department['employee_id'] = $e_id;
+      $this->db->insert('employee_department', $department);
+    }
+
+    $upd2 = $this->db->affected_rows();
+
+    if ($upd1 == 0 && $upd2 == 0) {
+      $this->session->set_flashdata('message', '<div class="alert alert-info" role="alert">Tidak ada perubahan yang dilakukan pada data pegawai.</div>');
+      redirect('master/e_employee/' . $e_id);
+    } else {
+      $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil memperbarui data pegawai!</div>');
       redirect('master/employee');
     }
   }
 
+  public function detail_employee($e_id)
+  {
+      $d['title'] = 'Detail Pegawai';
+      $d['employee'] = $this->db->get_where('employee', ['id' => $e_id])->row_array();
+  
+      // Ambil data department yang terkait dengan pegawai
+      $this->db->select('d.id as department_id, d.name as department_name');
+      $this->db->from('department d');
+      $this->db->join('employee_department ed', 'ed.department_id = d.id');
+      $this->db->where('ed.employee_id', $e_id);
+      $d['department_current'] = $this->db->get()->row_array();
+
+       // Ambil shift berdasarkan shift_id yang ada di employee
+    $this->db->select('s.id as shift_id, s.start, s.end');
+    $this->db->from('shift s');
+    $this->db->where('s.id', $d['employee']['shift_id']);
+    $d['shift_current'] = $this->db->get()->row_array();
+      
+      // Jika department tidak ditemukan, set department default
+      if (!$d['department_current']) {
+          $d['department_current'] = [
+              'department_id' => $d['department'][0]['id'],
+              'department_name' => $d['department'][0]['name']
+          ];
+      }
+  
+      // Ambil data shift pegawai
+      $d['shift'] = $this->db->get('shift')->result_array();
+  
+      // Ambil akun admin yang sedang login
+      $d['account'] = $this->Admin_model->getAdmin($this->session->userdata['username']);
+  
+      // Tampilkan halaman detail pegawai
+      $this->load->view('templates/header', $d);
+      $this->load->view('templates/sidebar');
+      $this->load->view('templates/topbar');
+      $this->load->view('master/employee/detail_employee', $d); // Menampilkan halaman detail pegawai
+      $this->load->view('templates/footer');
+  }
+  
+  
+
+
+
   public function d_employee($e_id)
   {
-    // Hapus semua data di tabel users yang terkait dengan employee_id tersebut
-    $this->db->delete('users', ['employee_id' => $e_id]);
+    // Ambil username dari users berdasarkan employee_id
+    $user = $this->db->get_where('users', ['employee_id' => $e_id])->row_array();
 
-    // Hapus employee setelah menghapus data terkait
+    if ($user) {
+      // Hapus data kehadiran (attendance) yang terkait dengan username tersebut
+      $this->db->delete('attendance', ['username' => $user['username']]);
+
+      // Hapus data di tabel users yang terkait dengan employee_id tersebut
+      $this->db->delete('users', ['employee_id' => $e_id]);
+    }
+
     $this->db->delete('employee', ['id' => $e_id]);
 
-    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus seorang pegawai!</div>');
+    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus data pegawai!</div>');
     redirect('master/employee');
   }
-
 
   public function location()
   {
@@ -602,6 +667,7 @@ class Master extends CI_Controller
   public function a_users($e_id)
   {
     $empDep = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
+    $user = $this->db->get_where('users', ['employee_id' => $e_id])->row_array();
     $d['title'] = 'Users';
     $d['username'] = $empDep['department_id'] . $empDep['employee_id'];
     $d['e_id'] = $empDep['employee_id'];
@@ -629,7 +695,14 @@ class Master extends CI_Controller
         'employee_id' => $this->input->post('e_id'),
         'role_id' => $role_id
       ];
-      $this->_addUsers($data);
+      // Cek apakah user sudah ada
+      if ($user) {
+        // Update user jika sudah ada
+        $this->_editUsers($data, $user['username']);
+      } else {
+        // Tambah user baru jika belum ada
+        $this->_addUsers($data);
+      }
     }
   }
   private function _addUsers($data)
