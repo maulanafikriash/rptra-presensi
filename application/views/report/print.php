@@ -36,6 +36,7 @@
         <tr>
           <th>#</th>
           <th>Tanggal</th>
+          <th>Nama</th>
           <th>Shift</th>
           <th>Check In</th>
           <th>Catatan</th>
@@ -71,13 +72,16 @@
               <!-- Kolom 2 (Date) -->
               <td><?= date('l, d F Y', $atd['date']); ?></td>
 
-              <!-- Kolom 3 (Shift) -->
+              <!-- Kolom 3 (name) -->
+              <td><?= $atd['name']; ?></td>
+
+              <!-- Kolom 4 (Shift) -->
               <td><?= $atd['shift']; ?></td>
 
-              <!-- Kolom 4 (Check In) -->
+              <!-- Kolom 5 (Check In) -->
               <td><?= date('H : i : s', $atd['date']); ?></td>
 
-              <!-- Kolom 5 (Notes) -->
+              <!-- Kolom 6 (Notes) -->
               <td><?= $atd['notes']; ?></td>
 
               <!-- Kolom 7 (Lack Of) -->

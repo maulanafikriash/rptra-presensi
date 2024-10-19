@@ -454,6 +454,10 @@ class Master extends CI_Controller
 
     if ($current_department) {
       // Jika ada department saat ini, lakukan update
+      if ($current_department['department_id'] != $department['department_id']) {
+        // Jika departemen berubah, kosongkan username dan password di tabel users
+        $this->db->update('users', ['username' => NULL, 'password' => NULL], ['employee_id' => $e_id]);
+      }
       $this->db->update('employee_department', $department, ['employee_id' => $e_id]);
     } else {
       // Jika tidak ada department terkait, lakukan insert department baru
@@ -476,16 +480,22 @@ class Master extends CI_Controller
 
   public function d_employee($e_id)
   {
-    // Hapus semua data di tabel users yang terkait dengan employee_id tersebut
-    $this->db->delete('users', ['employee_id' => $e_id]);
+    // Ambil username dari users berdasarkan employee_id
+    $user = $this->db->get_where('users', ['employee_id' => $e_id])->row_array();
 
-    // Hapus employee setelah menghapus data terkait
+    if ($user) {
+      // Hapus data kehadiran (attendance) yang terkait dengan username tersebut
+      $this->db->delete('attendance', ['username' => $user['username']]);
+
+      // Hapus data di tabel users yang terkait dengan employee_id tersebut
+      $this->db->delete('users', ['employee_id' => $e_id]);
+    }
+
     $this->db->delete('employee', ['id' => $e_id]);
 
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus data pegawai!</div>');
     redirect('master/employee');
   }
-
 
   public function location()
   {
@@ -613,6 +623,7 @@ class Master extends CI_Controller
   public function a_users($e_id)
   {
     $empDep = $this->db->get_where('employee_department', ['employee_id' => $e_id])->row_array();
+    $user = $this->db->get_where('users', ['employee_id' => $e_id])->row_array();
     $d['title'] = 'Users';
     $d['username'] = $empDep['department_id'] . $empDep['employee_id'];
     $d['e_id'] = $empDep['employee_id'];
@@ -640,7 +651,14 @@ class Master extends CI_Controller
         'employee_id' => $this->input->post('e_id'),
         'role_id' => $role_id
       ];
-      $this->_addUsers($data);
+      // Cek apakah user sudah ada
+      if ($user) {
+        // Update user jika sudah ada
+        $this->_editUsers($data, $user['username']);
+      } else {
+        // Tambah user baru jika belum ada
+        $this->_addUsers($data);
+      }
     }
   }
   private function _addUsers($data)
