@@ -39,7 +39,7 @@
                       <th>Actions</th>
                     </tr>
                   </thead>
-                
+
                   <tbody>
                     <?php
                     $i = 1;
@@ -62,6 +62,11 @@
                         <td class=" align-middle"><?= $emp['birth_date']; ?></td>
                         <td class=" align-middle"><?= $emp['hire_date']; ?></td>
                         <td class="text-center align-middle">
+                          <a href="<?= base_url('master/detail_employee/') . $emp['id'] ?>" class="btn btn-success btn-circle">
+                            <span class="icon" title="Details">
+                              <i class="fas fa-info"></i>
+                            </span>
+                          </a> |
                           <a href="<?= base_url('master/e_employee/') . $emp['id'] ?>" class="btn btn-primary btn-circle">
                             <span class="icon text-white" title="Edit">
                               <i class="fas fa-edit"></i>
