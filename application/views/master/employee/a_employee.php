@@ -37,7 +37,7 @@
               <div class="col p-0">
                 <select class="form-control" name="d_id" id="d_id">
                   <?php foreach ($department as $dpt) : ?>
-                    <option value="<?= $dpt['id'] ?>"><?= $dpt['name']; ?></option>
+                    <option value="<?= $dpt['department_id'] ?>"><?= $dpt['department_name']; ?></option>
                   <?php endforeach; ?>
                 </select>
               </div>
@@ -78,7 +78,7 @@
               <div class="col p-0">
                 <select class="form-control" name="s_id" id="s_id">
                   <?php foreach ($shift as $sft) : ?>
-                    <option value="<?= $sft['id'] ?>"><?= $sft['id'] . ' = ' . $sft['start'] . '-' . $sft['end']; ?></option>
+                    <option value="<?= $sft['shift_id'] ?>"><?= $sft['shift_id'] . ' = ' . $sft['start_time'] . '-' . $sft['end_time']; ?></option>
                   <?php endforeach; ?>
                 </select>
               </div>

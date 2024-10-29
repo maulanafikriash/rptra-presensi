@@ -24,7 +24,7 @@
                 <div class="card" style="width: 100%; height: 100%">
                     <img src="<?= base_url('images/pp/') . $employee['image']; ?>" class="card-img-top w-75 mx-auto pt-3">
                     <div class="card-body mt-3">
-                        <h5 class="card-title text-center"><?= $employee['name']; ?></h5>
+                        <h5 class="card-title text-center"><?= $employee['employee_name']; ?></h5>
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                                 <p><strong>ID Pegawai :</strong></p>
                             </div>
                             <div class="col-lg-8">
-                                <p><?= $employee['id']; ?></p>
+                                <p><?= $employee['employee_id']; ?></p>
                             </div>
                         </div>
                         <div class="row">
@@ -45,7 +45,7 @@
                                 <p><strong>Nama :</strong></p>
                             </div>
                             <div class="col-lg-8">
-                                <p><?= $employee['name']; ?></p>
+                                <p><?= $employee['employee_name']; ?></p>
                             </div>
                         </div>
                         <div class="row">
@@ -96,6 +96,12 @@
                                 <p><?= $department_current['department_id'] . ' - ' . $department_current['department_name']; ?></p>
                             </div>
                         </div>
+                        <a href="<?= base_url('master/attendance_history/') . $employee['employee_id'] ?>" class="btn btn-success btn-icon-split mt-4 float-right">
+                            <span class="icon text-white" title="Edit">
+                                <i class="fas fas fa-calendar-check"></i>
+                            </span>
+                            <span class="text">Riwayat Kehadiran</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -103,3 +109,4 @@
     </div>
 </div>
 <!-- /.container-fluid -->
+</div>

@@ -23,11 +23,10 @@
             <select class="form-control" name="dept">
               <option disabled>Department</option>
               <?php foreach ($department as $d) : ?>
-                <option value="<?= $d['id']; ?>"><?= $d['id']; ?></option>
+                <option value="<?= $d['department_id']; ?>"><?= $d['department_name']; ?></option>
               <?php endforeach; ?>
             </select>
             <?= form_error('dept', '<small class="text-danger pl-3">', '</small>') ?>
-
           </div>
           <div class="col-2 d-flex justify-content-end">
             <button type="submit" class="btn btn-success btn-fill" style="width: 100px; padding: 5px 10px;">Tampilkan</button>
@@ -37,58 +36,49 @@
     </div>
   </div>
   <!-- End of row show -->
-  <?php if ($attendance == false) : ?>
+  <?php if (!$attendance) : ?>
     <h3>Tidak Ada Data, <br> Silakan Pilih Tanggal dan Department Anda</h3>
   <?php else : ?>
-    <?php if ($attendance != null) : ?>
-      <div class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Data Kehadiran</h6>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-              <thead class="bg-info text-white">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Data Kehadiran</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead class="bg-info text-white">
+              <tr>
+                <th>#</th>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Shift</th>
+                <th>Check In</th>
+                <th>Catatan</th>
+                <th>Status Masuk</th>
+                <th>Check Out</th>
+                <th>Status Keluar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php $i = 1; foreach ($attendance as $atd) : ?>
                 <tr>
-                  <th>#</th>
-                  <th>Tanggal</th>
-                  <th>Nama</th>
-                  <th>Shift</th>
-                  <th>Check In</th>
-                  <th>catatan</th>
-                  <th>Lack Of</th>
-                  <th>Status Masuk</th>
-                  <th>Check Out</th>
-                  <th>Status Keluar</th>
+                  <th><?= $i++ ?></th>
+                  <td><?= $atd['attendance_date'] ?></td>
+                  <td><?= $atd['employee_name'] ?></td>
+                  <td><?= $atd['shift_id'] ?></td>
+                  <td><?= $atd['in_time'] ?></td>
+                  <td><?= $atd['notes'] ?: 'Unfilled' ?></td>
+                  <td><?= $atd['in_status']; ?></td>
+                  <td><?= $atd['out_time'] ?: 'Belum check out' ?></td>
+                  <td><?= $atd['out_status'] ?: 'Belum check out' ?></td>
                 </tr>
-              </thead>
-              <tbody>
-                <?php $i = 1;
-                foreach ($attendance as $atd) : ?>
-                  <tr>
-                    <th><?= $i++ ?></th>
-                    <td><?= date('Y-m-d', $atd['date']) ?></td>
-                    <td><?= $atd['name'] ?></td>
-                    <td><?= $atd['shift'] ?></td>
-                    <td><?= date('H:i:s', $atd['date']) ?></td>
-                    <td><?php if ($atd['notes'] == '') {
-                          echo 'Unfilled';
-                        } else {
-                          echo $atd['notes'];
-                        }  ?></td>
-                    <td><?= $atd['lack_of']; ?></td>
-                    <td><?= $atd['in_status']; ?></td>
-                    <td><?= date('H:i:s', $atd['out_time']); ?></td>
-                    <td><?= $atd['out_status']; ?></td>
-                  </tr>
-                <?php endforeach; ?>
-                <a href="<?= base_url('report/print/') . $start . '/' . $end . '/' . $dept_code ?>" target="blank" class="d-none d-sm-inline-block btn btn-sm btn-danger ml-2 shadow-sm float-right"><i class="fas fa-download fa-sm text-white"></i> Generate Report</a>
-              </tbody>
-            </table>
-          </div>
+              <?php endforeach; ?>
+              <a href="<?= base_url('report/print/') . $start . '/' . $end . '/' . $dept_code ?>" target="blank" class="d-none d-sm-inline-block btn btn-sm btn-danger ml-2 shadow-sm float-right"><i class="fas fa-download fa-sm text-white"></i> Generate Report</a>
+            </tbody>
+          </table>
         </div>
       </div>
-    <?php endif; ?>
+    </div>
   <?php endif; ?>
 </div>
 <!-- /.container-fluid -->

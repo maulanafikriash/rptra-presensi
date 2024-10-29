@@ -8,12 +8,10 @@
 
   <!-- Content Row -->
   <div class="row">
-
     <div class="col">
       <div class="row">
-
         <!-- Area Chart -->
-        <div class="col-xl-12 col-lg-7">
+        <div class="col-xl col-lg">
           <div class="card shadow mb-4" style="min-height: 543px">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -21,112 +19,185 @@
             </div>
             <!-- Card Body -->
             <div class="card-body">
+
+              <!-- Menampilkan Pesan Flashdata -->
+              <?php if ($this->session->flashdata('message')): ?>
+                <div class="alert alert-dismissible fade show" role="alert">
+                  <?= $this->session->flashdata('message'); ?>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              <?php endif; ?>
+
               <?php if ($weekends == true) : ?>
                 <h1 class="text-center my-3">Terima kasih Untuk Minggu Ini!</h1>
                 <h5 class="card-title text-center mb-4 px-4">Selamat beristirahat di akhir pekan <b>happy weekend</b></h5>
                 <b>
                   <p class="text-center text-primary pt-3">Sampai jumpa di hari Senin!</p>
                 </b>
-                <div class="row">
-                  <button disabled class="btn btn-danger btn-circle mx-auto" style="font-size: 35px; width: 200px; height: 200px">
-                    <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
-                  </button>
-                </div>
               <?php else : ?>
-                <?php if ($in == false) : ?>
-                  <?= form_open_multipart('attendance') ?>
-                  <div class="row mb-3">
-                    <div class="col-lg-5">
-                      <label for="work_shift" class="col-form-label">Work Shift</label>
-                      <?php
-                      $shift_display = 'Shift Not Available';
-                      foreach ($shift as $sft) {
-                        if ((int)$sft['id'] == (int)$account['shift']) {
-                          $shift_display = $sft['id'] . ' = ' . $sft['start'] . ' - ' . $sft['end'];
-                          break;
-                        }
-                      }
-                      ?>
-                      <input class="form-control" type="text" placeholder="<?= $shift_display; ?>" value="<?= $shift_display; ?>" name="work_shift" readonly>
-                    </div>
-                    <div class="col-lg-5 offset-lg-1">
-                      <label for="location" class="col-form-label">Check In Location</label>
-                      <select class="form-control" name="location" id="location">
-                        <?php foreach ($location as $lct) : ?>
-                          <option value="<?= $lct['id'] ?>"><?= $lct['id']; ?> = <?= $lct['name'] ?></option>
-                        <?php endforeach; ?>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-lg-5 text-center">
-                      <div class="row col">
-                        <label for="image" class="col-form-label float-left">Upload Foto Anda (Opsional)</label>
-                      </div>
-                      <img id="output" style="max-height: 252px;" class="img-thumbnail rounded mb-2" src="<?= base_url('images/attendance/default.png') ?>">
-                      <input type="file" class="d-block" id=image name="image" accept="image/*" onchange="loadFile(event)">
-                      <script>
-                        let loadFile = function(event) {
-                          let output = document.getElementById('output');
-                          output.src = URL.createObjectURL(event.target.files[0]);
-                          output.onload = function() {
-                            URL.revokeObjectURL(output.src) // free memory
-                          }
-                        };
-                      </script>
-                    </div>
-                    <div class="col-lg-5 offset-lg-1 text-center mt-4">
-                      <label for="notes" class="float-left">Catatan (Opsional)</label>
-                      <textarea maxlength="120" class="form-control mb-4" name="notes" id="notes" rows="3" style="resize: none;"></textarea>
-                      <hr>
-                      <button type="submit" class="btn btn-info btn-circle" style="font-size: 20px; width: 100px; height: 100px">
-                        <i class="fas fa-fw fa-sign-in-alt fa-2x"></i>
-                      </button>
-                      <b>
-                        <p class="text-center text-primary pt-3">Presensi Masuk!</p>
-                      </b>
-                      <hr>
-                    </div>
-                  </div>
-                  <?= form_close() ?>
-                <?php else : ?>
-                  <?php if ($disable == false) : ?>
-                    <h3 class="text-center my-3">Selamat Bekerja, tetap semangat...</h3>
-                    <h6 class="card-title text-center mb-4 px-4">Dunia bisnis tidak bergantung pada keterampilan kepemimpinan, tetapi lebih pada komitmen dan dedikasi karyawan yang bersemangat seperti Anda.
-                    </h6>
-                    <b>
-                      <p class="text-center text-primary pt-3">Presensi Keluar!</p>
-                    </b>
-                    <div class="row">
-                      <a href="<?= base_url('attendance/checkout') ?>" onclick="return confirm('Check out now? Make sure you are done with your work!')" class="btn btn-danger btn-circle mx-auto" style="font-size: 35px; width: 200px; height: 200px">
-                        <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
-                      </a>
-                    <?php else : ?>
-                      <h3 class="text-center my-3">Terima kasih untuk hari ini</h3>
-                      <h6 class="card-title text-center mb-4 px-4">
-                        Terima kasih atas kerja keras Anda.
-                      </h6>
-                      <b>
-                        <p class="text-center text-primary pt-3">Sampai jumpa besok!</p>
-                      </b>
-                      <div class="row">
-                        <button disabled class="btn btn-danger btn-circle mx-auto" style="font-size: 35px; width: 200px; height: 200px">
-                          <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
-                        </button>
-                      <?php endif; ?>
-                      </div>
-                    <?php endif; ?>
+                <?= form_open_multipart('attendance') ?>
 
-                  <?php endif; ?>
+                <!-- Bagian Shift dan Lokasi -->
+                <div class="row mb-3">
+                  <div class="col-lg-5">
+                    <label for="work_shift" class="col-form-label">Work Shift</label>
+                    <?php
+                    $shift_display = 'Shift Not Available';
+                    foreach ($shift as $sft) {
+                      if ((int)$sft['shift_id'] == (int)$account['shift']) {
+                        $shift_display = $sft['shift_id'] . ' = ' . $sft['start_time'] . ' - ' . $sft['end_time'];
+                        $shift_id = $sft['shift_id'];
+                        $start_time = $sft['start_time'];
+                        $end_time = $sft['end_time'];
+                        break;
+                      }
+                    }
+                    ?>
+                    <input class="form-control" type="text" placeholder="<?= $shift_display; ?>" value="<?= $shift_display; ?>" name="work_shift" readonly>
+                    <input type="hidden" name="work_shift" value="<?= $shift_id; ?>">
+                  </div>
+
+                  <!-- Tombol untuk mengaktifkan lokasi -->
+                  <div class="col-lg-5 offset-lg-1">
+                    <label for="location" class="col-form-label">Aktifkan Lokasi Saat Ini</label>
+                    <button type="button" class="btn btn-primary btn-block" id="activate-location-btn">Aktifkan Lokasi</button>
+
+                    <!-- Menampilkan status lokasi dan menyimpan latitude/longitude -->
+                    <p id="location-status" class="mt-2 text-muted text-center">Lokasi belum diaktifkan</p>
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+                  </div>
+                </div>
+
+                <!-- Bagian Catatan -->
+                <div class="row justify-content-center mb-3">
+                  <div class="col-lg-6 text-center mt-4">
+                    <label for="notes" class="float-left">Catatan (Opsional)</label>
+                    <textarea maxlength="120" class="form-control mb-4" name="notes" id="notes" rows="3"></textarea>
+
+                    <hr>
+                    <div class="d-flex justify-content-around">
+                      <!-- Tombol Status Presensi -->
+                      <div class="text-center">
+                        <button class="btn <?= $already_checked_in ? 'btn-success' : 'btn-danger' ?> btn-circle" style="font-size: 20px; width: 100px; height: 100px;" disabled>
+                          <i class="fas <?= $already_checked_in ? 'fa-check' : 'fa-times' ?> fa-2x"></i>
+                        </button>
+                        <p class="font-weight-bold <?= $already_checked_in ? 'text-success' : 'text-danger' ?> pt-2"><?= $already_checked_in ? 'Hadir' : 'Tidak Hadir' ?></p>
+                      </div>
+
+                      <!-- Tombol Presensi Masuk/Keluar -->
+                      <div class="text-center">
+                        <?php if (!$already_checked_in): ?>
+                          <!-- Tombol Presensi Masuk -->
+                          <button type="submit" name="check_in" value="1" class="btn btn-info btn-circle" id="check-in-btn" style="font-size: 20px; width: 100px; height: 100px;"
+                            <?php if ($shift_status == 'belum mulai' || $shift_status == 'sudah selesai') echo 'disabled'; ?> disabled>
+                            <i class="fas fa-fw fa-sign-in-alt fa-2x"></i>
+                          </button>
+
+                          <?php if ($shift_status == 'belum mulai'): ?>
+                            <p class="font-weight-bold text-primary pt-2">Shift Belum Mulai</p>
+                          <?php elseif ($shift_status == 'sudah selesai'): ?>
+                            <p class="text-danger pt-2" style="font-size: small;">Anda terlambat <br> Waktu Shift sudah selesai</p>
+                          <?php else: ?>
+                            <p class="font-weight-bold text-primary pt-2" id="check-in-status">Presensi Masuk!</p>
+                          <?php endif; ?>
+
+                        <?php else: ?>
+                          <!-- Tombol Presensi Keluar -->
+                          <button type="submit" name="check_out" value="1" class="btn btn-danger btn-circle" id="check-out-btn" style="font-size: 20px; width: 100px; height: 100px;"
+                            <?php if ($already_checked_out || $shift_status != 'sudah selesai') echo 'disabled'; ?> disabled>
+                            <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
+                          </button>
+
+                          <?php if ($already_checked_out): ?>
+                            <p class="text-danger pt-2">Sudah Presensi Keluar</p>
+                          <?php elseif ($shift_status == 'belum mulai'): ?>
+                            <p class="text-warning pt-2">Shift Belum Mulai</p>
+                          <?php elseif ($shift_status != 'sudah selesai'): ?>
+                            <p class="text-danger pt-2" style="font-size: small;">Presensi keluar akan dibuka <br> jika waktu shift sudah selesai.</p>
+                          <?php else: ?>
+                            <p class="font-weight-bold text-danger pt-2" id="check-out-status">Presensi Keluar!</p>
+                          <?php endif; ?>
+                        <?php endif; ?>
+                      </div>
                     </div>
+
+                  </div>
+                </div>
+
+              <?php endif; ?>
+
+              <?= form_close() ?>
+
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- End  -->
   </div>
-  <!-- /.container-fluid -->
-
 </div>
 <!-- End of Main Content -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const shiftStartTime = "<?= $start_time; ?>";
+    const shiftEndTime = "<?= $end_time; ?>";
+    const activateLocationBtn = document.getElementById("activate-location-btn");
+    const checkInBtn = document.getElementById("check-in-btn");
+    const checkOutBtn = document.getElementById("check-out-btn");
+
+    // Status apakah sudah check-out dari server
+    const alreadyCheckedOut = <?= json_encode($already_checked_out); ?>;
+
+    // Jika sudah check-out, tombol aktifkan lokasi dinonaktifkan
+    if (alreadyCheckedOut) {
+      activateLocationBtn.disabled = true;
+    }
+
+    function convertTo24HourTime(timeStr) {
+      const [hour, minute] = timeStr.split(':');
+      const date = new Date();
+      date.setHours(hour);
+      date.setMinutes(minute);
+      date.setSeconds(0);
+      return date;
+    }
+
+    const now = new Date();
+    const startShift = convertTo24HourTime(shiftStartTime);
+    const endShift = convertTo24HourTime(shiftEndTime);
+
+    // Aktivasi tombol lokasi jika waktu shift dimulai
+    if (!alreadyCheckedOut && now >= startShift) {
+      activateLocationBtn.disabled = false;
+    }
+
+    // Aktivasi tombol presensi keluar jika waktu shift selesai dan lokasi sudah aktif
+    activateLocationBtn.addEventListener("click", function() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+            document.getElementById("location-status").textContent = "Lokasi berhasil diaktifkan!";
+            alert("Berhasil mengaktifkan lokasi");
+
+            if (now >= startShift && now <= endShift) {
+              checkInBtn.disabled = false;
+            }
+            if (now > endShift) {
+              checkOutBtn.disabled = false;
+            }
+          },
+          function() {
+            alert("Gagal mengaktifkan lokasi. Harap izinkan akses lokasi di browser Anda.");
+          }
+        );
+      } else {
+        alert("Geolocation tidak didukung oleh browser ini.");
+      }
+    });
+  });
+</script>

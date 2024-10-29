@@ -23,22 +23,32 @@ class Admin extends CI_Controller
     $this->load->model('Admin_model');
   }
 
-  // Dashboard
   public function index()
   {
-    $dquery = "SELECT department_id AS d_id, COUNT(employee_id) AS qty FROM employee_department GROUP BY d_id";
+    // Menghitung jumlah karyawan berdasarkan departemen
+    $dquery = "SELECT department.department_id AS d_id, COUNT(attendance.employee_id) AS qty 
+                   FROM attendance 
+                   INNER JOIN department ON attendance.department_id = department.department_id 
+                   GROUP BY department.department_id";
     $d['d_list'] = $this->db->query($dquery)->result_array();
-    $squery = "SELECT shift_id AS s_id, COUNT(id) AS qty FROM employee GROUP BY s_id";
+
+    // Menghitung jumlah karyawan berdasarkan shift
+    $squery = "SELECT shift.shift_id AS s_id, COUNT(employee.employee_id) AS qty 
+                    FROM employee 
+                    INNER JOIN attendance ON employee.employee_id = attendance.employee_id 
+                    INNER JOIN shift ON employee.shift_id = shift.shift_id 
+                    GROUP BY shift.shift_id";
     $d['s_list'] = $this->db->query($squery)->result_array();
+
     // Dashboard
     $d['title'] = 'Dashboard';
-    $d['account'] = $this->Admin_model->getAdmin($this->session->userdata['username']);
+    $d['account'] = $this->Admin_model->getAdmin($this->session->userdata('username'));
     $d['display'] = $this->Admin_model->getDataForDashboard();
 
     $this->load->view('templates/dashboard_header', $d);
     $this->load->view('templates/sidebar');
     $this->load->view('templates/topbar');
-    $this->load->view('admin/index', $d); // Dashboard Page
+    $this->load->view('admin/index', $d); 
     $this->load->view('templates/dashboard_footer');
   }
 }

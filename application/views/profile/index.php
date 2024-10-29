@@ -24,6 +24,10 @@
             <td>: <?= $account['id']; ?></td>
           </tr>
           <tr>
+            <th scope="row">Email</th>
+            <td>: <?= $account['email']; ?></td>
+          </tr>
+          <tr>
             <th scope="row">Jenis Kelamin</th>
             <td>: <?php if ($account['gender'] == 'L') {
                     echo 'Laki-Laki';

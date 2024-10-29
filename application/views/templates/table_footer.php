@@ -24,12 +24,12 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Yakin ingin Keluar ?</h5>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-body">Pilih "Logout" di bawah jika Anda ingin keluar</div>
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
               <a class="btn btn-info" href="<?= base_url('auth/logout') ?>">Logout</a>
@@ -37,6 +37,8 @@
           </div>
         </div>
       </div>
+
+
 
       <!-- Bootstrap core JavaScript-->
       <script src="<?= base_url('assets/'); ?>vendorss/jquery/jquery.min.js"></script>

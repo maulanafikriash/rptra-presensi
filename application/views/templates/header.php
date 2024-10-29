@@ -19,6 +19,7 @@
   <link href="<?= base_url('assets/'); ?>css/sb-admin-2.min.css" rel="stylesheet">
   <link href="<?= base_url('assets/'); ?>css/time-topbar.css" rel="stylesheet">
   <link href="<?= base_url('assets/'); ?>css/custom.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
 </head>
 

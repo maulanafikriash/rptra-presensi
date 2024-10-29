@@ -50,8 +50,8 @@
                       } ?>
                       <tr>
                         <td class=" align-middle"><?= $i++; ?></td>
-                        <td class=" align-middle"><?= $emp['id']; ?></td>
-                        <td class=" align-middle"><?= $emp['name']; ?></td>
+                        <td class=" align-middle"><?= $emp['employee_id']; ?></td>
+                        <td class=" align-middle"><?= $emp['employee_name']; ?></td>
                         <td class=" align-middle"><?= $emp['shift_id']; ?></td>
                         <td class=" align-middle"><?php if ($emp['gender'] == 'L') {
                                                     echo 'Laki-Laki';
@@ -62,17 +62,17 @@
                         <td class=" align-middle"><?= $emp['birth_date']; ?></td>
                         <td class=" align-middle"><?= $emp['hire_date']; ?></td>
                         <td class="text-center align-middle">
-                          <a href="<?= base_url('master/detail_employee/') . $emp['id'] ?>" class="btn btn-success btn-circle">
+                          <a href="<?= base_url('master/detail_employee/') . $emp['employee_id'] ?>" class="btn btn-success btn-circle">
                             <span class="icon" title="Details">
                               <i class="fas fa-info"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/e_employee/') . $emp['id'] ?>" class="btn btn-primary btn-circle">
+                          <a href="<?= base_url('master/e_employee/') . $emp['employee_id'] ?>" class="btn btn-primary btn-circle">
                             <span class="icon text-white" title="Edit">
                               <i class="fas fa-edit"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/d_employee/') . $emp['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Pegawai yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
+                          <a href="<?= base_url('master/d_employee/') . $emp['employee_id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Pegawai yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
                             <span class="icon text-white" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </span>

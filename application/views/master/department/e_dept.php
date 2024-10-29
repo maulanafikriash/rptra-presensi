@@ -19,11 +19,11 @@
                 <p class="card-text">Form untuk edit department ke sistem</p>
                 <div class="form-group">
                   <label for="department_id" class="col-form-label-lg">ID Department</label>
-                  <input type="text" readonly class="form-control-plaintext form-control-lg" name="d_id" value="<?= $d_old['id']; ?>">
+                  <input type="text" readonly class="form-control-plaintext form-control-lg" name="d_id" value="<?= $d_old['department_id']; ?>">
                 </div>
                 <div class="form-group">
                   <label for="d_name" class="col-form-label-lg">Nama Department</label>
-                  <input type="text" class="form-control form-control-lg" name="d_name" id="d_name" value="<?= $d_old['name']; ?>">
+                  <input type="text" class="form-control form-control-lg" name="d_name" id="d_name" value="<?= $d_old['department_name']; ?>">
                   <?= form_error('d_name', '<small class="text-danger">', '</small>') ?>
                 </div>
                 <button type="submit" class="btn btn-success btn-icon-split mt-4 float-right">

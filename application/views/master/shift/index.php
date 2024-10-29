@@ -42,15 +42,15 @@
                     ?>
                       <tr>
                         <td class="align-middle"><?= $i++; ?></td>
-                        <td class="align-middle"><?= $sft['start']; ?></td>
-                        <td class="align-middle"><?= $sft['end']; ?></td>
+                        <td class="align-middle"><?= $sft['start_time']; ?></td>
+                        <td class="align-middle"><?= $sft['end_time']; ?></td>
                         <td class="align-middle text-center">
-                          <a href="<?= base_url('master/e_shift/') . $sft['id'] ?>" class="btn btn-primary btn-circle">
+                          <a href="<?= base_url('master/e_shift/') . $sft['shift_id'] ?>" class="btn btn-primary btn-circle">
                             <span class="icon text-white" title="Edit">
                               <i class="fas fa-edit"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/d_shift/') . $sft['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Shift yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
+                          <a href="<?= base_url('master/d_shift/') . $sft['shift_id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Shift yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
                             <span class="icon text-white" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </span>

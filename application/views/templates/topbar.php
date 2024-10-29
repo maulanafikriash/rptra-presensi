@@ -13,7 +13,7 @@
       </button>
 
       <!-- Real-time Clock Display -->
-      <div class="navbar-text text-gray-600 mr-auto" id="realTimeClock">
+      <div class="navbar-text font-weight-bold mr-auto" id="realTimeClock">
         <!-- Clock will be displayed here -->
       </div>
 
