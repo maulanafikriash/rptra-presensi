@@ -49,7 +49,7 @@
                  <div class="row no-gutters align-items-center">
                    <div class="col mr-2">
                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pegawai</div>
-                     <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $display['c_employee']; ?>Pegawai</div>
+                     <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $display['c_employee']; ?> Pegawai</div>
                    </div>
                    <div class="col-auto">
                      <i class="fas fa-id-badge fa-2x text-gray-300"></i>
@@ -130,31 +130,42 @@
                  <!-- Card Header - Dropdown -->
                  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                    <h6 class="m-0 font-weight-bold text-primary">Pegawai per Shift</h6>
+                   <div class="dropdown no-arrow">
+                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       <i class="fas fa-info-circle fa-md fa-fw text-gray-600"></i>
+                     </a>
+                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                       <div class="dropdown-header">More Details:</div>
+                       <a class="dropdown-item" href="<?= base_url('master/shift') ?>">Shift Details</a>
+                     </div>
+                   </div>
                  </div>
                  <!-- Card Body -->
                  <div class="card-body" style="max-height: 370px;">
-                   <table class="table">
-                     <thead class="bg-info text-white">
-                       <tr>
-                         <th scope="col">#</th>
-                         <th scope="col">Kode Shift</th>
-                         <th scope="col">Pegawai</th>
-                       </tr>
-                     </thead>
-                     <tbody>
-                       <?php $i = 1;
-                        foreach ($s_list as $s) : ?>
-                         <?php if ($s['s_id'] == 0) {
-                            continue;
-                          } ?>
+                   <div style="max-height: 300px; overflow-y: auto;">
+                     <table class="table">
+                       <thead class="bg-info text-white">
                          <tr>
-                           <th scope="row"><?= $i++ ?></th>
-                           <td><?= $s['s_id'] ?></td>
-                           <td><?= $s['qty'] ?></td>
+                           <th scope="col">#</th>
+                           <th scope="col">Kode Shift</th>
+                           <th scope="col">Pegawai</th>
                          </tr>
-                       <?php endforeach; ?>
-                     </tbody>
-                   </table>
+                       </thead>
+                       <tbody>
+                         <?php $i = 1;
+                          foreach ($s_list as $s) : ?>
+                           <?php if ($s['s_id'] == 0) {
+                              continue;
+                            } ?>
+                           <tr>
+                             <th scope="row"><?= $i++ ?></th>
+                             <td><?= $s['s_id'] ?></td>
+                             <td><?= $s['qty'] ?></td>
+                           </tr>
+                         <?php endforeach; ?>
+                       </tbody>
+                     </table>
+                   </div>
                  </div>
                </div>
              </div>

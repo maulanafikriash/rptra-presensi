@@ -18,7 +18,7 @@
             </div>
           </div>
 
-          <?= form_open_multipart('master/e_employee/' . $employee['id']); ?>
+          <?= form_open_multipart('master/e_employee/' . $employee['employee_id']); ?>
           <div class="col-lg p-0">
             <div class="row">
               <div class="col-lg-3">
@@ -40,13 +40,13 @@
                       <div class="col-lg-4">
                         <div class="form-group">
                           <label for="employee_id" class="col-form-label">ID Pegawai</label>
-                          <input type="text" readonly class="form-control-plaintext" name="e_id" value="<?= $employee['id']; ?>">
+                          <input type="text" readonly class="form-control-plaintext" name="e_id" value="<?= $employee['employee_id']; ?>">
                         </div>
                       </div>
                       <div class="col-lg-8">
                         <div class="form-group">
                           <label for="e_name" class="col-form-label">Nama Pegawai</label>
-                          <input type="text" class="form-control" name="e_name" id="e_name" value="<?= $employee['name']; ?>">
+                          <input type="text" class="form-control" name="e_name" id="e_name" value="<?= $employee['employee_name']; ?>">
                           <?= form_error('e_name', '<small class="text-danger">', '</small>') ?>
                         </div>
                       </div>
@@ -102,8 +102,8 @@
                           <label for="s_id" class="col-form-label">Shift</label>
                           <select class="form-control" name="s_id" id="s_id">
                             <?php foreach ($shift as $sft) : ?>
-                              <option value="<?= $sft['id'] ?>" <?php if ($sft['id'] == $employee['shift_id']) echo 'selected'; ?>>
-                                Shift <?= $sft['id'] ?> = <?= date('H:i', strtotime($sft['start'])) . ' - ' . date('H:i', strtotime($sft['end'])) ?>
+                              <option value="<?= $sft['shift_id'] ?>" <?php if ($sft['shift_id'] == $employee['shift_id']) echo 'selected'; ?>>
+                                Shift <?= $sft['shift_id'] ?> = <?= date('H:i', strtotime($sft['start_time'])) . ' - ' . date('H:i', strtotime($sft['end_time'])) ?>
                               </option>
                             <?php endforeach; ?>
                           </select>
@@ -114,8 +114,8 @@
                           <label for="d_id" class="col-form-label">Department</label>
                           <select class="form-control" name="d_id" id="d_id">
                             <?php foreach ($department as $dpt) : ?>
-                              <option value="<?= $dpt['id'] ?>" <?php if ($dpt['id'] == $department_current['department_id']) echo 'selected'; ?>>
-                                <?= $dpt['id'] ?> - <?= $dpt['name'] ?>
+                              <option value="<?= $dpt['department_id'] ?>" <?php if ($dpt['department_id'] == $department_current['department_id']) echo 'selected'; ?>>
+                                <?= $dpt['department_id'] ?> - <?= $dpt['department_name'] ?>
                               </option>
                             <?php endforeach; ?>
                           </select>

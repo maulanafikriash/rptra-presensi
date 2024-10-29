@@ -42,15 +42,15 @@
                     ?>
                       <tr>
                         <td class="align-middle"><?= $i++; ?></td>
-                        <td class="align-middle"><?= $dpt['id']; ?></td>
-                        <td class="align-middle"><?= $dpt['name']; ?></td>
+                        <td class="align-middle"><?= $dpt['department_id']; ?></td>
+                        <td class="align-middle"><?= $dpt['department_name']; ?></td>
                         <td class="align-middle text-center">
-                          <a href="<?= base_url('master/e_dept/') . $dpt['id'] ?>" class="btn btn-primary btn-circle">
+                          <a href="<?= base_url('master/e_dept/') . $dpt['department_id'] ?>" class="btn btn-primary btn-circle">
                             <span class="icon text-white" title="Edit">
                               <i class="fas fa-edit"></i>
                             </span>
                           </a> |
-                          <a href="<?= base_url('master/d_dept/') . $dpt['id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Department yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
+                          <a href="<?= base_url('master/d_dept/') . $dpt['department_id'] ?>" class="btn btn-danger btn-circle" onclick="return confirm('Department yang dihapus akan hilang selamanya. Yakin ingin menghapus ?')">
                             <span class="icon text-white" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </span>

@@ -1,15 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-/**
- * @property CI_Loader $load
- * @property CI_Session $session
- * @property CI_DB $db
- * @property CI_Input $input
- * @property Public_model $Public_model
- * @property Admin_model $Admin_model
- */
-
 class Report extends CI_Controller
 {
   public function __construct()
@@ -19,6 +10,7 @@ class Report extends CI_Controller
     $this->load->model('Public_model');
     $this->load->model('Admin_model');
   }
+
   public function index()
   {
     $d['title'] = 'Laporan Presensi';
@@ -35,14 +27,16 @@ class Report extends CI_Controller
     $this->load->view('report/index', $d);
     $this->load->view('templates/table_footer');
   }
+
   private function _attendanceDetails($start, $end, $dept)
   {
-    if ($start == '' || $end == '') {
+    if (!$start || !$end) {
       return false;
     } else {
       return $this->Public_model->get_attendance($start, $end, $dept);
     }
   }
+
   public function print($start, $end, $dept)
   {
     $d['start'] = $start;
