@@ -30,6 +30,7 @@
                     <div class="col p-0">
                       <input type="password" class="form-control col-lg" name="u_password" id="u_password">
                       <?= form_error('u_password', '<small class="text-danger">', '</small>') ?>
+                      <small class="form-text text-muted">Gunakan <b> rptra2024 </b> sebagai password default</small>
                     </div>
                   </div>
                   <button type="submit" class="btn btn-success btn-icon-split mt-4 float-right">

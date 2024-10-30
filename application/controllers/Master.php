@@ -80,7 +80,7 @@ class Master extends CI_Controller
   {
     // Edit Department
     $d['title'] = 'Department';
-    $d['d_old'] = $this->db->get_where('department', ['department_id' => $d_id])->row_array(); 
+    $d['d_old'] = $this->db->get_where('department', ['department_id' => $d_id])->row_array();
     $d['account'] = $this->Admin_model->getAdmin($this->session->userdata('username'));
     // Form Validation
     $this->form_validation->set_rules('d_name', 'Department Name', 'required|trim');
@@ -99,8 +99,8 @@ class Master extends CI_Controller
 
   private function _editDept($d_id, $name)
   {
-    $data = ['department_name' => $name]; 
-    $this->db->update('department', $data, ['department_id' => $d_id]); 
+    $data = ['department_name' => $name];
+    $this->db->update('department', $data, ['department_id' => $d_id]);
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Berhasil mengedit department!</div>');
     redirect('master');
@@ -112,7 +112,7 @@ class Master extends CI_Controller
     $this->db->delete('attendance', ['department_id' => $d_id]);
 
     // Hapus department setelah menghapus data terkait
-    $this->db->delete('department', ['department_id' => $d_id]); 
+    $this->db->delete('department', ['department_id' => $d_id]);
 
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus department!</div>');
     redirect('master');
@@ -243,7 +243,7 @@ class Master extends CI_Controller
 
   private function _editShift($s_id, $set)
   {
-    $this->db->where('shift_id', $s_id); 
+    $this->db->where('shift_id', $s_id);
     $this->db->update('shift', $set);
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Berhasil mengedit shift!</div>');
@@ -257,7 +257,7 @@ class Master extends CI_Controller
     $this->db->update('attendance', ['shift_id' => NULL]);
 
     // Hapus data shift setelah memperbarui data terkait
-    $this->db->delete('shift', ['shift_id' => $s_id]); 
+    $this->db->delete('shift', ['shift_id' => $s_id]);
 
     $query = 'ALTER TABLE `shift` AUTO_INCREMENT = 1';
     $this->db->query($query);
@@ -451,6 +451,23 @@ class Master extends CI_Controller
     $rows_affected = $this->db->affected_rows();
 
     if ($rows_affected > 0) {
+      // Ambil data employee terbaru termasuk department_id dan employee_id
+      $employee = $this->db->get_where('employee', ['employee_id' => $e_id])->row_array();
+
+      if ($employee) {
+        // Bentuk username baru dengan format department_id + employee_id
+        $new_username = $employee['department_id'] . str_pad($employee['employee_id'], 3, '0', STR_PAD_LEFT);
+
+        // Update username di user_accounts
+        $this->db->update('user_accounts', ['username' => $new_username], ['employee_id' => $e_id]);
+
+        // Update username dan department_id di attendance
+        $this->db->update('attendance', [
+          'username' => $new_username,
+          'department_id' => $employee['department_id']
+        ], ['employee_id' => $e_id]);
+      }
+
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil memperbarui data pegawai!</div>');
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-info" role="alert">Tidak ada perubahan pada data pegawai.</div>');
@@ -552,16 +569,16 @@ class Master extends CI_Controller
     $attendanceData = [];
     foreach ($attendance as $att) {
       if (isset($att['date'])) {
-          $day = (int) date('j', strtotime($att['date']));
-          $attendanceData[$day] = [
-              'presence_status' => $att['presence_status'],
-              'check_in_latitude' => $att['check_in_latitude'],
-              'check_in_longitude' => $att['check_in_longitude'],
-              'check_out_latitude' => $att['check_out_latitude'],
-              'check_out_longitude' => $att['check_out_longitude']
-          ];
+        $day = (int) date('j', strtotime($att['date']));
+        $attendanceData[$day] = [
+          'presence_status' => $att['presence_status'],
+          'check_in_latitude' => $att['check_in_latitude'],
+          'check_in_longitude' => $att['check_in_longitude'],
+          'check_out_latitude' => $att['check_out_latitude'],
+          'check_out_longitude' => $att['check_out_longitude']
+        ];
       }
-  }
+    }
     $data['attendance'] = $attendanceData;
 
     $data['account'] = $this->Admin_model->getAdmin($this->session->userdata('username'));
@@ -637,11 +654,11 @@ class Master extends CI_Controller
 
     if ($user) {
       // Hapus data di tabel user_accounts yang terkait dengan employee_id tersebut
-      $this->db->delete('user_accounts', ['employee_id' => $e_id]); 
+      $this->db->delete('user_accounts', ['employee_id' => $e_id]);
     }
 
     // Hapus data pegawai dari tabel employee
-    $this->db->delete('employee', ['employee_id' => $e_id]); 
+    $this->db->delete('employee', ['employee_id' => $e_id]);
     $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil menghapus data pegawai!</div>');
     redirect('master/employee');
   }
@@ -708,7 +725,7 @@ class Master extends CI_Controller
 
   private function _addUsers($data)
   {
-    $this->db->insert('user_accounts', $data); 
+    $this->db->insert('user_accounts', $data);
     $rows = $this->db->affected_rows();
     if ($rows > 0) {
       $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil membuat akun!</div>');
@@ -722,7 +739,7 @@ class Master extends CI_Controller
   public function e_users($username)
   {
     $d['title'] = 'Users';
-    $d['user'] = $this->db->get_where('user_accounts', ['username' => $username])->row_array(); 
+    $d['users'] = $this->db->get_where('user_accounts', ['username' => $username])->row_array();
     $d['account'] = $this->Admin_model->getAdmin($this->session->userdata('username'));
 
     // Validasi password
@@ -757,7 +774,6 @@ class Master extends CI_Controller
 
     redirect('master/users');
   }
-
 
   public function d_users($username)
   {

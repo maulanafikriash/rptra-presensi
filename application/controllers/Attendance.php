@@ -66,7 +66,7 @@ class Attendance extends CI_Controller
 
         $username = $this->session->userdata('username');
         $today = date('Y-m-d');
-        $attendance = $this->db->get_where('attendance', ['username' => $username, 'attendance_date' => $today])->row_array(); 
+        $attendance = $this->db->get_where('attendance', ['username' => $username, 'attendance_date' => $today])->row_array();
         $d['already_checked_in'] = !empty($attendance);
         $d['already_checked_out'] = !empty($attendance) && !is_null($attendance['out_time']);
         log_message('info', 'Check-in query: ' . $this->db->last_query());
@@ -97,7 +97,7 @@ class Attendance extends CI_Controller
     {
         // Ambil data shift
         $shift = $d['account']['shift'];
-        $queryShift = "SELECT * FROM `shift` WHERE `shift_id` = $shift"; 
+        $queryShift = "SELECT * FROM `shift` WHERE `shift_id` = $shift";
         $resultShift = $this->db->query($queryShift)->row_array();
         $startTime = $resultShift['start_time'];
 
@@ -188,7 +188,7 @@ class Attendance extends CI_Controller
         log_message('info', 'Check-out query: ' . $this->db->last_query());
 
         if ($checkOut) {
-            $oTime = date('H:i:s'); 
+            $oTime = date('H:i:s');
 
             // Tentukan status keluar berdasarkan waktu akhir shift
             $endShiftTime = strtotime($checkOut['end_time']);
@@ -300,8 +300,8 @@ class Attendance extends CI_Controller
         $this->db->select('attendance_date AS date, presence_status');
         $this->db->from('attendance');
         $this->db->where('employee_id', $employee_id);
-        $this->db->where('MONTH(attendance_date)', $month); 
-        $this->db->where('YEAR(attendance_date)', $year); 
+        $this->db->where('MONTH(attendance_date)', $month);
+        $this->db->where('YEAR(attendance_date)', $year);
         $attendance = $this->db->get()->result_array();
 
         $attendanceData = [];
@@ -319,5 +319,76 @@ class Attendance extends CI_Controller
         $this->load->view('templates/topbar');
         $this->load->view('attendance/history/index', $data);
         $this->load->view('templates/footer');
+    }
+
+    public function change_password()
+    {
+        $data['title'] = 'Change Password';
+
+        // Ambil data akun pengguna yang sedang login
+        $data['account'] = $this->Public_model->getAccount($this->session->userdata('username'));
+
+        $employee_id = $data['account']['id'];
+
+        if (!$employee_id) {
+            show_error('Employee ID is required but not found.', 400);
+        }
+
+        // Ambil data pegawai berdasarkan employee_id
+        $data['employee'] = $this->db->get_where('employee', ['employee_id' => $employee_id])->row_array();
+
+        if (!$data['employee']) {
+            show_error('Employee not found', 404);
+        }
+
+        $this->form_validation->set_rules('current_password', 'Password Aktif', 'required');
+        $this->form_validation->set_rules('new_password', 'Password Baru', 'required|min_length[6]');
+        $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password Baru', 'required|matches[new_password]');
+
+        $this->form_validation->set_message('min_length', '{field} harus berisi minimal {param} karakter.');
+        $this->form_validation->set_message('matches', '{field} harus sama dengan Password Baru.');
+
+        if ($this->form_validation->run() == FALSE) {
+            // Jika validasi gagal
+            if (validation_errors()) {
+                $this->session->set_flashdata('error', validation_errors());
+            }
+            // Jika validasi gagal, tampilkan halaman ubah password dengan error
+            $this->load->view('templates/header', $data);
+            $this->load->view('templates/sidebar');
+            $this->load->view('templates/topbar');
+            $this->load->view('attendance/change_password/index', $data); // pastikan view change_password ada di folder views/attendance
+            $this->load->view('templates/footer');
+        } else {
+            $username = $this->session->userdata('username');
+            $current_password = $this->input->post('current_password');
+            $new_password = $this->input->post('new_password');
+
+            // Query untuk mendapatkan hash password saat ini dari database
+            $this->db->select('password');
+            $this->db->where('username', $username);
+            $user = $this->db->get('user_accounts')->row();
+
+            // Validasi password aktif (password lama) harus cocok dengan password di database
+            if ($user && password_verify($current_password, $user->password)) {
+                // Pastikan password baru tidak sama dengan password aktif (lama)
+                if (password_verify($new_password, $user->password)) {
+                    $this->session->set_flashdata('error', 'Password baru tidak boleh sama dengan password aktif.');
+                    redirect('attendance/change_password/index');
+                } else {
+                    // Hash password baru dan lakukan update
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $this->db->set('password', $hashed_password);
+                    $this->db->where('username', $username);
+                    $this->db->update('user_accounts');
+
+                    $this->session->set_flashdata('success', 'Password berhasil diubah.');
+                    redirect('attendance/change_password/index');
+                }
+            } else {
+                $this->session->set_flashdata('error', 'Password aktif tidak sesuai.');
+                redirect('attendance/change_password/index');
+            }
+        }
     }
 }

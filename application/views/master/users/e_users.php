@@ -25,6 +25,7 @@
                   <label for="password" class="col-form-label-lg">Reset Password</label>
                   <input type="password" class="form-control form-control-lg" name="password" id="password">
                   <?= form_error('password', '<small class="text-danger">', '</small>') ?>
+                  <small class="form-text text-muted">Gunakan <b> rptra2024 </b> sebagai password default</small>
                 </div>
                 <button type="submit" class="btn btn-success btn-icon-split mt-4 float-right">
                   <span class="icon text-white">
