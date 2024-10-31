@@ -23,14 +23,12 @@ class Admin_model extends CI_Model
     {
         $d['shift'] = $this->db->get('shift')->result_array();
         $d['c_shift'] = $this->db->get('shift')->num_rows();
-        // $d['location'] = $this->db->get('department')->result_array();
-        // $d['c_location'] = $this->db->get('department')->num_rows();
         $d['employee'] = $this->db->get('employee')->result_array();
         $d['c_employee'] = $this->db->get('employee')->num_rows();
         $d['department'] = $this->db->get('department')->result_array();
         $d['c_department'] = $this->db->get('department')->num_rows();
-        $d['users'] = $this->db->get('user_accounts')->result_array(); // Ganti 'users' menjadi 'user_accounts'
-        $d['c_users'] = $this->db->get('user_accounts')->num_rows(); // Ganti 'users' menjadi 'user_accounts'
+        $d['users'] = $this->db->get('user_accounts')->result_array(); 
+        $d['c_users'] = $this->db->get('user_accounts')->num_rows();
 
         return $d;
     }
@@ -57,22 +55,4 @@ class Admin_model extends CI_Model
                   WHERE attendance.department_id = '$d_id'";
         return $this->db->query($query)->result_array();
     }
-
-    // public function getEmployeeStatsbyCurrent($e_id)
-    // {
-    //     $year = date('Y', time());
-    //     $month = date('m', time());
-    //     $query = "SELECT  in_time AS `date`,
-    //                       out_time AS `out_time`,
-    //                       shift_id AS `shift`,
-    //                       in_status AS `status`,
-    //                       presence_status AS `lack_of`
-    //               FROM  attendance
-    //               WHERE employee_id = $e_id
-    //                 AND YEAR(attendance_date) = $year
-    //                 AND MONTH(attendance_date) = $month
-    //               ORDER BY `date` ASC";
-
-    //     return $this->db->query($query)->result_array();
-    // }
 }
