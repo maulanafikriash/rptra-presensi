@@ -22,20 +22,37 @@
     </div>
 
     <!-- Filter Bulan dan Tahun -->
-    <form action="" method="get" class="mb-3">
-        <select name="month">
-            <?php for ($m = 1; $m <= 12; $m++) : ?>
-                <option value="<?= $m; ?>" <?= ($m == $month) ? 'selected' : '' ?>><?= date('F', mktime(0, 0, 0, $m, 1)); ?></option>
-            <?php endfor; ?>
-        </select>
+    <form action="" method="get" class="form-inline mb-3">
+        <div class="form-group mr-2">
+            <label for="month" class="mr-2">Bulan:</label>
+            <select name="month" id="month" class="form-control">
+                <?php for ($m = 1; $m <= 12; $m++) : ?>
+                    <option value="<?= $m; ?>" <?= ($m == $month) ? 'selected' : '' ?>><?= date('F', mktime(0, 0, 0, $m, 1)); ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
 
-        <select name="year">
-            <?php for ($y = date('Y') - 5; $y <= date('Y') + 5; $y++) : ?> <!-- Menampilkan 5 tahun sebelum dan 5 tahun sesudah tahun saat ini -->
-                <option value="<?= $y; ?>" <?= ($y == $year) ? 'selected' : '' ?>><?= $y; ?></option>
-            <?php endfor; ?>
-        </select>
+        <div class="form-group mr-2">
+            <label for="year" class="mr-2">Tahun:</label>
+            <select name="year" id="year" class="form-control">
+                <?php for ($y = date('Y') - 5; $y <= date('Y') + 5; $y++) : ?>
+                    <option value="<?= $y; ?>" <?= ($y == $year) ? 'selected' : '' ?>><?= $y; ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Filter</button>
     </form>
+
+
+    <!-- Tombol Cetak PDF -->
+    <div class="text-right mb-2">
+        <a href="<?= base_url('report/print_attendance_history/' . $employee['employee_id'] . '?month=' . $month . '&year=' . $year); ?>" class="btn btn-danger btn-icon-split" target="_blank">
+            <span class="icon text-white">
+                <i class="fas fa-file-pdf"></i>
+            </span>
+            <span class="text">Cetak PDF</span>
+        </a>
+    </div>
 
     <!-- Tabel Kalender -->
     <table class="table table-bordered">
@@ -121,7 +138,7 @@
                                 echo "<span class='badge badge-danger'>Tidak Hadir</span>";
                             }
                         }
-    
+
                         echo "</td>";
                     } else {
                         echo "<td></td>";
@@ -144,4 +161,3 @@
         </ul>
     </div>
 </div>
-
