@@ -60,7 +60,7 @@
                   </div>
 
                   <!-- Tombol untuk mengaktifkan lokasi -->
-                  <div class="col-lg-5 offset-lg-1">
+                  <div class="col-lg-5 offset-lg-1 location-container">
                     <label for="location" class="col-form-label">Aktifkan Lokasi Saat Ini</label>
                     <button type="button" class="btn btn-primary btn-block" id="activate-location-btn">Aktifkan Lokasi</button>
 

@@ -66,23 +66,24 @@ $role_id = $this->session->userdata('user_role_id');
 <?php if ($role_id == 2): ?>
   <!-- Bottom Menu untuk Employee -->
   <div class="bottom-menu bg-light d-flex justify-content-around py-2" style="display: none;">
-    <a href="<?= base_url('attendance'); ?>" class="text-center">
+    <a href="<?= base_url('attendance'); ?>" class="text-center <?= ($this->uri->segment(1) == 'attendance' && $this->uri->segment(2) == '') ? 'active' : ''; ?>">
       <i class="fas fa-calendar-alt"></i><br>
       <small>Presensi</small>
     </a>
-    <a href="<?= base_url('attendance/history'); ?>" class="text-center">
+    <a href="<?= base_url('attendance/history'); ?>" class="text-center <?= ($this->uri->segment(2) == 'history') ? 'active' : ''; ?>">
       <i class="fas fa-file-alt"></i><br>
       <small>Riwayat</small>
     </a>
-    <a href="<?= base_url('profile'); ?>" class="text-center">
+    <a href="<?= base_url('profile'); ?>" class="text-center <?= ($this->uri->segment(1) == 'profile') ? 'active' : ''; ?>">
       <i class="fas fa-user"></i><br>
       <small>Profil</small>
     </a>
-    <a href="<?= base_url('attendance/change_password'); ?>" class="text-center">
+    <a href="<?= base_url('attendance/change_password'); ?>" class="text-center <?= ($this->uri->segment(2) == 'change_password') ? 'active' : ''; ?>">
       <i class="fas fa-lock"></i><br>
       <small>Setting</small>
     </a>
   </div>
+
 <?php endif; ?>
 
 <style>
@@ -97,7 +98,30 @@ $role_id = $this->session->userdata('user_role_id');
       border-top: 1px solid #ddd;
     }
 
-    /* Sembunyikan sidebar pada layar kecil */
+    .bottom-menu a {
+      color: #63625d;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-menu a i {
+      font-size: 20px;
+      /* Ukuran ikon */
+    }
+
+    .bottom-menu a small {
+      margin-top: -15px !important;
+    }
+
+    .bottom-menu a.active {
+      color: #0d6efd;
+      font-weight: bolder;
+    }
+
     .sidebar {
       display: none;
     }

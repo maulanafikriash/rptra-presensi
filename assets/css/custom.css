@@ -102,7 +102,7 @@
     }
 }
 
-@media (max-width: 460px) {
+@media (max-width: 500px) {
     .account-name {
         font-size: 24px;
     }
@@ -125,4 +125,21 @@
 .account-image {
     width: 270px;
     height: 270px;
+}
+
+@media (max-width: 500px) {
+    .location-container {
+        padding-top: 20px;
+    }
+
+    .btn-circle {
+        font-size: 14px !important;
+        width: 70px !important;
+        height: 70px !important;
+    }
+
+    .btn-circle i {
+        font-size: 1.5rem;
+        /* Ubah ukuran ikon */
+    }
 }
