@@ -4,3 +4,9 @@
       /* Ukuran kecil untuk layar mobile */
     }
   }
+
+  @media (max-width: 500px) {
+    #sidebarToggleTop {
+        display: none;
+    }
+}
