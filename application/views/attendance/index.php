@@ -62,10 +62,12 @@
                   <!-- Tombol untuk mengaktifkan lokasi -->
                   <div class="col-lg-5 offset-lg-1 location-container">
                     <label for="location" class="col-form-label">Aktifkan Lokasi Saat Ini</label>
-                    <button type="button" class="btn btn-primary btn-block" id="activate-location-btn">Aktifkan Lokasi</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block shadow-sm" id="activate-location-btn" style="display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.3s;">
+                      <i class="fas fa-map-marker-alt mr-2"></i> Aktifkan Lokasi
+                    </button>
 
                     <!-- Menampilkan status lokasi dan menyimpan latitude/longitude -->
-                    <p id="location-status" class="mt-2 text-muted text-center">Lokasi belum diaktifkan</p>
+                    <p id="location-status" class="mt-2 text-muted text-center" style="font-size: 14px;">Lokasi belum diaktifkan</p>
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
                   </div>
@@ -182,7 +184,16 @@
             document.getElementById("latitude").value = position.coords.latitude;
             document.getElementById("longitude").value = position.coords.longitude;
             document.getElementById("location-status").textContent = "Lokasi berhasil diaktifkan!";
-            alert("Berhasil mengaktifkan lokasi");
+            document.getElementById("location-status").classList.remove("text-muted");
+            document.getElementById("location-status").classList.add("text-success", "font-weight-bold");
+
+            // Memunculkan SweetAlert2 modal
+            Swal.fire({
+              icon: 'success',
+              title: 'Lokasi Berhasil Diaktifkan',
+              text: 'Lokasi Anda telah berhasil diaktifkan, silahkan melakukan presensi.',
+              confirmButtonText: 'Oke'
+            });
 
             if (now >= startShift && now <= endShift) {
               checkInBtn.disabled = false;
@@ -192,11 +203,21 @@
             }
           },
           function() {
-            alert("Gagal mengaktifkan lokasi. Harap izinkan akses lokasi di browser Anda.");
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal Mengaktifkan Lokasi',
+              text: 'Harap izinkan akses lokasi di browser Anda.',
+              confirmButtonText: 'Oke'
+            });
           }
         );
       } else {
-        alert("Geolocation tidak didukung oleh browser ini.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Geolocation Tidak Didukung',
+          text: 'Geolocation tidak didukung oleh browser ini.',
+          confirmButtonText: 'Oke'
+        });
       }
     });
   });

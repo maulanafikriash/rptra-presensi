@@ -102,14 +102,15 @@
       <!-- Custom scripts for all pages-->
       <script src="<?= base_url('assets/'); ?>js/sb-admin-2.min.js"></script>
       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
       <script>
         $('#editAttendanceModal').on('show.bs.modal', function(event) {
-          var button = $(event.relatedTarget);
-          var day = button.data('day');
-          var month = '<?= $month; ?>';
-          var year = '<?= $year; ?>';
-          var modal = $(this);
+          let button = $(event.relatedTarget);
+          let day = button.data('day');
+          let month = '<?= $month; ?>';
+          let year = '<?= $year; ?>';
+          let modal = $(this);
 
           // Tambahkan log untuk memeriksa nilai-nilai variabel
           console.log('day:', day, 'month:', month, 'year:', year);
