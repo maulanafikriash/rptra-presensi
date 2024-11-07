@@ -2,7 +2,6 @@
 <html lang="id">
 
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
@@ -40,18 +39,24 @@
       </thead>
       <tbody>
         <?php $i = 1;
-        foreach ($attendance as $atd) : ?>
-          <tr>
-            <td><?= $i++; ?></td>
-            <td><?= date('l, d F Y', strtotime($atd['attendance_date'])); ?></td>
-            <td><?= $atd['employee_name']; ?></td>
-            <td><?= $atd['shift_id']; ?></td>
-            <td><?= $atd['in_time'] ? date('H:i:s', strtotime($atd['in_time'])) : 'Belum check in'; ?></td>
-            <td><?= $atd['notes'] ?: 'Tidak ada catatan'; ?></td>
-            <td><?= $atd['in_status']; ?></td>
-            <td><?= $atd['out_time'] ? date('H:i:s', strtotime($atd['out_time'])) : "Belum check out"; ?></td>
-            <td><?= $atd['out_status'] ?: 'Belum check out'; ?></td>
-          </tr>
+        foreach ($attendance as $date => $attendances) : // Looping berdasarkan tanggal 
+        ?>
+          <?php foreach ($attendances as $index => $atd) : ?>
+            <tr>
+              <?php if ($index === 0) :
+              ?>
+                <td rowspan="<?= count($attendances); ?>"><?= $i++; ?></td>
+                <td rowspan="<?= count($attendances); ?>"><?= $date; ?></td>
+              <?php endif; ?>
+              <td><?= $atd['employee_name']; ?></td>
+              <td><?= $atd['shift_id']; ?></td>
+              <td><?= $atd['in_time'] ? date('H:i:s', strtotime($atd['in_time'])) : 'Belum check in'; ?></td>
+              <td><?= $atd['notes'] ?: 'Tidak ada catatan'; ?></td>
+              <td><?= $atd['in_status']; ?></td>
+              <td><?= $atd['out_time'] ? date('H:i:s', strtotime($atd['out_time'])) : "Belum check out"; ?></td>
+              <td><?= $atd['out_status'] ?: 'Belum check out'; ?></td>
+            </tr>
+          <?php endforeach; ?>
         <?php endforeach; ?>
       </tbody>
     </table>

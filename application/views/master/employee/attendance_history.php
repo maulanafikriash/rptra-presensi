@@ -98,19 +98,22 @@
                         // Tampilkan tanggal dan status presensi
                         echo "<td><strong  class='h5'>$dayCounter</strong><br>";
 
+                        // Tampilkan ikon edit dan lokasi hanya jika tanggal saat ini atau sebelumnya
+                    if ($currentLoopDate <= $currentDate) {
                         echo "<a href='#' class='float-right' data-target='#editAttendanceModal' data-toggle='modal' data-day='$dayCounter'><i class='fas fa-edit'></i></a><br>";
 
                         echo "<div class='d-flex flex-column align-items-start'>";
                         // Tampilkan ikon lokasi presensi masuk
                         echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Masuk' onclick=\"showMap(" . ($attendance[$dayCounter]['check_in_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_in_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check In')\">
-                    <i class='fas fa-map-marker-alt text-success'></i>
-                  </a>";
+                            <i class='fas fa-map-marker-alt text-success'></i>
+                        </a>";
 
                         // Tampilkan ikon lokasi presensi keluar
                         echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out')\">
-                    <i class='fas fa-map-marker-alt text-danger'></i>
-                  </a>";
+                            <i class='fas fa-map-marker-alt text-danger'></i>
+                        </a>";
                         echo "</div>";
+                    }
 
 
                         // Cek apakah hari ini adalah hari Minggu
