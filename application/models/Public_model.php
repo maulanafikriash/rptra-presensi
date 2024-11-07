@@ -43,6 +43,7 @@ class Public_model extends CI_Model
         $this->db->where('attendance.department_id', $dept);
         $this->db->where('attendance.attendance_date >=', $start);
         $this->db->where('attendance.attendance_date <=', $end);
+        $this->db->where('attendance.presence_status', 1);
         $this->db->order_by('attendance.attendance_date', 'ASC');
 
         return $this->db->get()->result_array();

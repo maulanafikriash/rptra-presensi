@@ -613,7 +613,10 @@ class Master extends CI_Controller
       // Jika data ada, update `presence_status`
       $this->db->where('employee_id', $employee_id);
       $this->db->where('attendance_date', $date);
-      $updated = $this->db->update('attendance', ['presence_status' => $presence_status]);
+      $updated = $this->db->update('attendance', [
+        'presence_status' => $presence_status,
+        'in_time' => date('H:i:s')
+    ]);
 
       if ($updated) {
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Status presensi berhasil diperbarui!</div>');
@@ -629,8 +632,9 @@ class Master extends CI_Controller
         'username' => $this->session->userdata('username'),
         'department_id' => $department_id,
         'shift_id' => $shift_id,
-        'in_status' => 'manual',
-        'out_status' => 'manual',
+        'in_status' => 'via admin',
+        'out_status' => 'via admin',
+        'in_time' => date('H:i:s')
       ]);
 
       if ($inserted) {

@@ -53,12 +53,21 @@ class Report extends CI_Controller
   {
     $d['start'] = $start;
     $d['end'] = $end;
-    $d['attendance'] = $this->Public_model->get_attendance($start, $end, $dept);
+    $attendance = $this->Public_model->get_attendance($start, $end, $dept);
     $d['dept'] = $dept;
 
     // Mengambil nama departemen
     $department = $this->db->get_where('department', ['department_id' => $dept])->row_array();
     $d['dept_name'] = $department['department_name'];
+
+    // Kelompokkan data berdasarkan tanggal
+    $grouped_attendance = [];
+    foreach ($attendance as $atd) {
+        $date = date('l, d F Y', strtotime($atd['attendance_date']));
+        $grouped_attendance[$date][] = $atd; // Simpan data berdasarkan tanggal
+    }
+    
+    $d['attendance'] = $grouped_attendance;
 
     // Load view ke dalam variabel
     $html = $this->load->view('report/print', $d, true);

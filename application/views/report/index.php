@@ -67,7 +67,7 @@
                   <td><?= $atd['employee_name'] ?></td>
                   <td><?= $atd['shift_id'] ?></td>
                   <td><?= $atd['in_time'] ?></td>
-                  <td><?= $atd['notes'] ?: 'Unfilled' ?></td>
+                  <td><?= $atd['notes'] ?: '-' ?></td>
                   <td><?= $atd['in_status']; ?></td>
                   <td><?= $atd['out_time'] ?: 'Belum check out' ?></td>
                   <td><?= $atd['out_status'] ?: 'Belum check out' ?></td>
