@@ -14,7 +14,7 @@ class Admin extends CI_Controller
   public function __construct()
   {
     parent::__construct();
-    // is_weekends();
+    is_weekends();
     is_logged_in();
     is_checked_in();
     is_checked_out();
