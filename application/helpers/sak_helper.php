@@ -6,11 +6,11 @@ function is_logged_in()
   if (!$ci->session->userdata('username')) {
     redirect('auth');
   } else {
-    $role_id = $ci->session->userdata('user_role_id'); // Ubah menjadi user_role_id
+    $role_id = $ci->session->userdata('user_role_id');
     $menu = $ci->uri->segment(1);
 
     $queryMenu = $ci->db->get_where('user_menu', ['menu' => $menu])->row_array();
-    $menu_id = $queryMenu['user_menu_id']; // Ubah id menjadi user_menu_id
+    $menu_id = $queryMenu['user_menu_id'];
     $userAccess = $ci->db->get_where('user_access', ['user_role_id' => $role_id, 'user_menu_id' => $menu_id]); // Ubah role_id dan menu_id
 
     if ($userAccess->num_rows() < 1) {
@@ -23,7 +23,7 @@ function is_weekends()
 {
   date_default_timezone_set('Asia/Jakarta');
   $today = date('l', time());
-  $weekends = ['Saturday', 'Sunday'];
+  $weekends = ['Sunday'];
   return in_array($today, $weekends);
 }
 
@@ -43,7 +43,7 @@ function is_checked_in()
   $ci->db->query($query);
   $rows = $ci->db->affected_rows();
 
-  return $rows > 0; // Ubah untuk menggunakan return langsung
+  return $rows > 0;
 }
 
 function is_checked_out()
@@ -64,5 +64,5 @@ function is_checked_out()
   $ci->db->query($query);
   $rows = $ci->db->affected_rows();
 
-  return $rows > 0; // Ubah untuk menggunakan return langsung
+  return $rows > 0;
 }

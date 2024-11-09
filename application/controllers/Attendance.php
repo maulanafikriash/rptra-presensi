@@ -34,7 +34,7 @@ class Attendance extends CI_Controller
 
         // Set weekends flag (true if weekend, false otherwise)
         $currentDay = date('w');
-        $d['weekends'] = ($currentDay == 0 || $currentDay == 6);
+        $d['weekends'] = ($currentDay == 0);
 
         $shift = $d['account']['shift'];
         $shiftData = $this->db->get_where('shift', ['shift_id' => $shift])->row_array();
