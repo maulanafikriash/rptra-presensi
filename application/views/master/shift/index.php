@@ -6,7 +6,7 @@
 
           <div class="row">
             <div class="col-lg-3">
-              <a href="<?= base_url('master/a_shift'); ?>" class="btn btn-info btn-icon-split mb-4">
+              <a href="<?= base_url('master/a_shift'); ?>" class="btn btn-primary btn-icon-split mb-4">
                 <span class="icon text-white">
                   <i class="fas fa-plus-circle"></i>
                 </span>

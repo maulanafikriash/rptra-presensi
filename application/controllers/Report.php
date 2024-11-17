@@ -32,6 +32,7 @@ class Report extends CI_Controller
     $d['end'] = $this->input->get('end');
     $d['dept_code'] = $this->input->get('dept');
     $d['attendance'] = $this->_attendanceDetails($d['start'], $d['end'], $d['dept_code']);
+    $d['shift_data'] = $this->db->get('shift')->result_array();
 
     $this->load->view('templates/table_header', $d);
     $this->load->view('templates/sidebar');
@@ -60,13 +61,17 @@ class Report extends CI_Controller
     $department = $this->db->get_where('department', ['department_id' => $dept])->row_array();
     $d['dept_name'] = $department['department_name'];
 
+    // Mengambil data shift
+    $shift_data = $this->db->get('shift')->result_array();
+    $d['shift_data'] = $shift_data;
+
     // Kelompokkan data berdasarkan tanggal
     $grouped_attendance = [];
     foreach ($attendance as $atd) {
-        $date = date('l, d F Y', strtotime($atd['attendance_date']));
-        $grouped_attendance[$date][] = $atd; // Simpan data berdasarkan tanggal
+      $date = date('l, d F Y', strtotime($atd['attendance_date']));
+      $grouped_attendance[$date][] = $atd; // Simpan data berdasarkan tanggal
     }
-    
+
     $d['attendance'] = $grouped_attendance;
 
     // Load view ke dalam variabel

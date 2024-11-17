@@ -40,7 +40,7 @@
                 <?= form_open_multipart('attendance') ?>
 
                 <!-- Bagian Shift dan Lokasi -->
-                <div class="row mb-3">
+                <div class="row">
                   <div class="col-lg-5">
                     <label for="work_shift" class="col-form-label">Work Shift</label>
                     <?php
@@ -75,14 +75,11 @@
 
                 <!-- Bagian Catatan -->
                 <div class="row justify-content-center mb-3">
-                  <div class="col-lg-6 text-center mt-4">
-                    <label for="notes" class="float-left">Catatan (Opsional)</label>
-                    <textarea maxlength="120" class="form-control mb-4" name="notes" id="notes" rows="3"></textarea>
-
+                  <div class="col-lg-6 text-center">
                     <hr>
                     <div class="d-flex justify-content-around">
                       <!-- Tombol Status Presensi -->
-                      <div class="text-center">
+                      <div class="text-center mt-3">
                         <button class="btn <?= $already_checked_in ? 'btn-success' : 'btn-danger' ?> btn-circle" style="font-size: 20px; width: 100px; height: 100px;" disabled>
                           <i class="fas <?= $already_checked_in ? 'fa-check' : 'fa-times' ?> fa-2x"></i>
                         </button>
@@ -90,10 +87,10 @@
                       </div>
 
                       <!-- Tombol Presensi Masuk/Keluar -->
-                      <div class="text-center">
+                      <div class="text-center mt-3">
                         <?php if (!$already_checked_in): ?>
                           <!-- Tombol Presensi Masuk -->
-                          <button type="submit" name="check_in" value="1" class="btn btn-info btn-circle" id="check-in-btn" style="font-size: 20px; width: 100px; height: 100px;"
+                          <button type="submit" name="check_in" value="1" class="btn btn-primary btn-circle" id="check-in-btn" style="font-size: 20px; width: 100px; height: 100px;"
                             <?php if ($shift_status == 'belum mulai' || $shift_status == 'sudah selesai') echo 'disabled'; ?> disabled>
                             <i class="fas fa-fw fa-sign-in-alt fa-2x"></i>
                           </button>

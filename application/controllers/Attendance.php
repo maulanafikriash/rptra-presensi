@@ -64,9 +64,12 @@ class Attendance extends CI_Controller
             $d['attendance_status'] = 'Tidak Hadir';
         }
 
-        $username = $this->session->userdata('username');
+        $employee_id = $d['account']['id'];
         $today = date('Y-m-d');
-        $attendance = $this->db->get_where('attendance', ['username' => $username, 'attendance_date' => $today])->row_array();
+        $attendance = $this->db->get_where('attendance', [
+            'employee_id' => $employee_id,
+            'attendance_date' => $today
+        ])->row_array();
         $d['already_checked_in'] = !empty($attendance);
         $d['already_checked_out'] = !empty($attendance) && !is_null($attendance['out_time']);
         log_message('info', 'Check-in query: ' . $this->db->last_query());
@@ -117,7 +120,6 @@ class Attendance extends CI_Controller
         $shift_id = $this->input->post('work_shift');
         $in_time = date('H:i:s');
         $today = date('Y-m-d');
-        $notes = $this->input->post('notes');
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');
 
@@ -137,7 +139,6 @@ class Attendance extends CI_Controller
             'department_id' => $department_id,
             'shift_id' => $shift_id,
             'in_time' => $in_time,
-            'notes' => $notes,
             'in_status' => $inStatus,
             'presence_status' => $presence_status,
             'check_in_latitude' => $latitude,
@@ -167,55 +168,50 @@ class Attendance extends CI_Controller
     public function checkOut()
     {
         log_message('info', 'checkOut method called');
-        $username = $this->session->userdata('username');
-        $today = date('Y-m-d', time());
-        $latitude = $this->input->post('latitude');
-        $longitude = $this->input->post('longitude');
-        $querySelect = "SELECT attendance.username AS `username`,
-                                   attendance.employee_id AS `employee_id`,
-                                   attendance.shift_id AS `shift_id`,
-                                   attendance.in_time AS `in_time`,
-                                   shift.start_time AS `start_time`,
-                                   shift.end_time AS `end_time`
-                             FROM `attendance`
-                       INNER JOIN `shift`
-                               ON attendance.shift_id = shift.shift_id
-                             WHERE `username` = '$username'
-                               AND attendance.attendance_date = '$today'";
-        $checkOut = $this->db->query($querySelect)->row_array();
-
-        // Log hasil query check-out
-        log_message('info', 'Check-out query: ' . $this->db->last_query());
-
-        if ($checkOut) {
-            $oTime = date('H:i:s');
-
-            // Tentukan status keluar berdasarkan waktu akhir shift
-            $endShiftTime = strtotime($checkOut['end_time']);
-            $outTime = strtotime($oTime);
-
-            if ($outTime <= $endShiftTime + 600 && $outTime >= $endShiftTime) { // 10 menit setelah waktu berakhir
+        $d['account'] = $this->Public_model->getAccount($this->session->userdata('username'));
+         // Ambil data employee_id dari session atau akun login
+         $employee_id = $d['account']['id'];
+         $today = date('Y-m-d', time());
+         $outTime = date('H:i:s');
+         $latitude = $this->input->post('latitude');
+         $longitude = $this->input->post('longitude');
+ 
+         // Cek data presensi keluar untuk employee_id dan tanggal hari ini
+         $attendance = $this->db->get_where('attendance', [
+             'employee_id' => $employee_id,
+             'attendance_date' => $today
+         ])->row_array();
+ 
+         if ($attendance) {
+             if (!is_null($attendance['out_time'])) {
+                 // Jika out_time sudah ada, cegah double check-out
+                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Anda sudah melakukan presensi keluar!</div>');
+                 redirect('attendance');
+             }     
+ 
+             // Tentukan status keluar berdasarkan waktu akhir shift
+             $endShiftTime = strtotime($attendance['shift_end']);
+ 
+             if ($outTime <= $endShiftTime + 900 && $outTime >= $endShiftTime) { // 15 menit setelah waktu berakhir
                 $outStatus = 'Tepat Waktu';
-            } elseif ($outTime > $endShiftTime + 600 && $outTime <= $endShiftTime + 1200) { // 10 hingga 20 menit setelah
-                $outStatus = 'Melebihi Waktu';
             } else {
-                // Hilangkan status keluar otomatis di sini
-                $outStatus = 'Melebihi Waktu'; // Jika lebih dari 20 menit, gunakan status ini juga
+                $outStatus = 'Melebihi Waktu'; // Jika keluar lebih dari 15 menit setelah waktu berakhir
             }
-
-            $presence_status = 1; // Tetap 'Hadir' setelah check-out
-
-            $value = [
-                'out_time' => $oTime,
-                'out_status' => $outStatus,
-                'presence_status' => $presence_status,
-                'check_out_latitude' => $latitude,
-                'check_out_longitude' => $longitude
-            ];
-
-            $this->db->where('username', $username);
-            $this->db->where('attendance_date', $today);
-            $this->db->update('attendance', $value);
+            
+             $presence_status = 1; // Tetap 'Hadir' setelah check-out
+ 
+             $value = [
+                 'out_time' => $outTime,
+                 'out_status' => $outStatus,
+                 'presence_status' => $presence_status,
+                 'check_out_latitude' => $latitude,
+                 'check_out_longitude' => $longitude
+             ];
+ 
+             // Update berdasarkan employee_id dan tanggal
+             $this->db->where('employee_id', $employee_id);
+             $this->db->where('attendance_date', $today);
+             $this->db->update('attendance', $value);
 
             // Log query update waktu keluar
             log_message('info', 'Update query: ' . $this->db->last_query());

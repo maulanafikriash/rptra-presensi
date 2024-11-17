@@ -633,7 +633,6 @@ class Master extends CI_Controller
         'department_id' => $department_id,
         'shift_id' => $shift_id,
         'in_status' => 'via admin',
-        'out_status' => 'via admin',
         'in_time' => date('H:i:s')
       ]);
 

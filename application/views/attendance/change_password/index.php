@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<div class="container mb-5">
     <h3 class="text-center">Ubah Password</h3>
 
     <!-- Pesan Flash -->
@@ -20,7 +20,7 @@
         </div>
     <?php endif; ?>
 
-    <div class="col-md-6 mx-auto">
+    <div class="col-md-6 mx-auto pt-3">
         <?= form_open_multipart('attendance/change_password') ?>
         <div class="form-group">
             <label for="current_password">Password Aktif</label>
