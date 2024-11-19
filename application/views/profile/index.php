@@ -16,7 +16,7 @@
 
     <!-- right -->
     <div class="col-sm-10 col-md-6 offset-sm-1">
-      <h1 class="h3 text-white bg-info px-3 py-2 rounded mt-1 mb-3 data-pegawai">Data Pegawai</h1>
+      <h1 class="h3 text-white bg-primary px-3 py-2 rounded mt-1 mb-3 data-pegawai">Data Pegawai</h1>
       <table class="table">
         <tbody>
           <tr>

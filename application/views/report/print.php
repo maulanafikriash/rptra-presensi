@@ -8,6 +8,20 @@
 
 <body>
   <div class="container">
+    <?php
+    function formatTanggalIndonesia($tanggal)
+    {
+      $fmt = new IntlDateFormatter(
+        'id_ID',
+        IntlDateFormatter::FULL,
+        IntlDateFormatter::NONE,
+        'Asia/Jakarta',
+        IntlDateFormatter::GREGORIAN
+      );
+      $fmt->setPattern('EEEE, dd MMMM yyyy'); 
+      return $fmt->format(new DateTime($tanggal));
+    }
+    ?>
     <div class="header-section">
       <h2>Laporan Kehadiran Pegawai</h2>
     </div>
@@ -17,7 +31,7 @@
     </div>
     <div class="date-range">
       <?php if ($start != null || $end != null) : ?>
-        <p><strong>Dari tanggal:</strong> <?= date('j F Y', strtotime($start)); ?> <strong>sampai</strong> <?= date('j F Y', strtotime($end)); ?></p>
+        <p><strong>Dari tanggal:</strong> <?= formatTanggalIndonesia($start); ?> <strong>sampai</strong> <?= formatTanggalIndonesia($end); ?></p>
       <?php else : ?>
         <p>Semua tanggal</p>
       <?php endif; ?>
@@ -31,7 +45,6 @@
           <th>Nama</th>
           <th>Shift</th>
           <th>Check In</th>
-          <th>Catatan</th>
           <th>Status Masuk</th>
           <th>Check Out</th>
           <th>Status Keluar</th>
@@ -43,17 +56,29 @@
         ?>
           <?php foreach ($attendances as $index => $atd) : ?>
             <tr>
-              <?php if ($index === 0) :
-              ?>
+              <?php if ($index === 0) : ?>
                 <td rowspan="<?= count($attendances); ?>"><?= $i++; ?></td>
-                <td rowspan="<?= count($attendances); ?>"><?= $date; ?></td>
+                <td rowspan="<?= count($attendances); ?>"><?= formatTanggalIndonesia($date); ?></td>
               <?php endif; ?>
               <td><?= $atd['employee_name']; ?></td>
-              <td><?= $atd['shift_id']; ?></td>
+              <td>
+                <?php
+                // Mencari shift berdasarkan shift_id
+                $shift_info = array_filter($shift_data, function ($shift) use ($atd) {
+                  return $shift['shift_id'] == $atd['shift_id'];
+                });
+                $shift_info = array_values($shift_info);
+                if (!empty($shift_info)) {
+                  $shift = $shift_info[0];
+                  echo $shift['shift_id'] . " = " . date('H:i', strtotime($shift['start_time'])) . " - " . date('H:i', strtotime($shift['end_time']));
+                } else {
+                  echo "Shift Tidak Ditemukan";
+                }
+                ?>
+              </td>
               <td><?= $atd['in_time'] ? date('H:i:s', strtotime($atd['in_time'])) : 'Belum check in'; ?></td>
-              <td><?= $atd['notes'] ?: 'Tidak ada catatan'; ?></td>
               <td><?= $atd['in_status']; ?></td>
-              <td><?= $atd['out_time'] ? date('H:i:s', strtotime($atd['out_time'])) : "Belum check out"; ?></td>
+              <td><?= ($atd['out_time'] === "Belum waktunya") ? '-' : ($atd['out_time'] ?: 'Belum check out') ?></td>
               <td><?= $atd['out_status'] ?: 'Belum check out'; ?></td>
             </tr>
           <?php endforeach; ?>

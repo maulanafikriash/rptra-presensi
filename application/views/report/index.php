@@ -4,7 +4,12 @@
   <div class="row">
     <div class="col-lg">
       <h1 class="h1 mb-4 text-gray-900"><?= $title; ?></h1>
-      <a href="<?= base_url('admin') ?>" class="btn btn-md btn-info mb-2">Kembali</a>
+      <a href="<?= base_url('admin'); ?>" class="btn btn-secondary btn-icon-split mb-4">
+        <span class="icon text-white">
+          <i class="fas fa-chevron-left"></i>
+        </span>
+        <span class="text">Kembali</span>
+      </a>
     </div>
   </div>
   <div class="row">
@@ -46,30 +51,44 @@
       <div class="card-body">
         <div class="table-responsive">
           <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-            <thead class="bg-info text-white">
+            <thead class="bg-primary text-white">
               <tr>
                 <th>#</th>
                 <th>Tanggal</th>
                 <th>Nama</th>
                 <th>Shift</th>
                 <th>Check In</th>
-                <th>Catatan</th>
                 <th>Status Masuk</th>
                 <th>Check Out</th>
                 <th>Status Keluar</th>
               </tr>
             </thead>
             <tbody>
-              <?php $i = 1; foreach ($attendance as $atd) : ?>
+              <?php $i = 1;
+              foreach ($attendance as $atd) : ?>
                 <tr>
                   <th><?= $i++ ?></th>
                   <td><?= $atd['attendance_date'] ?></td>
                   <td><?= $atd['employee_name'] ?></td>
-                  <td><?= $atd['shift_id'] ?></td>
+                  <td>
+                    <?php
+                    // Mencari shift berdasarkan shift_id
+                    $shift_info = array_filter($shift_data, function ($shift) use ($atd) {
+                      return $shift['shift_id'] == $atd['shift_id'];
+                    });
+                    $shift_info = array_values($shift_info);
+                    if (!empty($shift_info)) {
+                      $shift = $shift_info[0];
+                      echo $shift['shift_id'] . " = " . date('H:i', strtotime($shift['start_time'])) . " - " . date('H:i', strtotime($shift['end_time']));
+                    } else {
+                      echo "Shift Tidak Ditemukan";
+                    }
+                    ?>
+                  </td>
+
                   <td><?= $atd['in_time'] ?></td>
-                  <td><?= $atd['notes'] ?: '-' ?></td>
                   <td><?= $atd['in_status']; ?></td>
-                  <td><?= $atd['out_time'] ?: 'Belum check out' ?></td>
+                  <td><?= ($atd['out_time'] === "Belum waktunya") ? '-' : ($atd['out_time'] ?: 'Belum check out') ?></td>
                   <td><?= $atd['out_status'] ?: 'Belum check out' ?></td>
                 </tr>
               <?php endforeach; ?>

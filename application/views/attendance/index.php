@@ -40,7 +40,7 @@
                 <?= form_open_multipart('attendance') ?>
 
                 <!-- Bagian Shift dan Lokasi -->
-                <div class="row mb-3">
+                <div class="row">
                   <div class="col-lg-5">
                     <label for="work_shift" class="col-form-label">Work Shift</label>
                     <?php
@@ -75,14 +75,11 @@
 
                 <!-- Bagian Catatan -->
                 <div class="row justify-content-center mb-3">
-                  <div class="col-lg-6 text-center mt-4">
-                    <label for="notes" class="float-left">Catatan (Opsional)</label>
-                    <textarea maxlength="120" class="form-control mb-4" name="notes" id="notes" rows="3"></textarea>
-
+                  <div class="col-lg-6 text-center">
                     <hr>
                     <div class="d-flex justify-content-around">
                       <!-- Tombol Status Presensi -->
-                      <div class="text-center">
+                      <div class="text-center mt-3">
                         <button class="btn <?= $already_checked_in ? 'btn-success' : 'btn-danger' ?> btn-circle" style="font-size: 20px; width: 100px; height: 100px;" disabled>
                           <i class="fas <?= $already_checked_in ? 'fa-check' : 'fa-times' ?> fa-2x"></i>
                         </button>
@@ -90,10 +87,10 @@
                       </div>
 
                       <!-- Tombol Presensi Masuk/Keluar -->
-                      <div class="text-center">
+                      <div class="text-center mt-3">
                         <?php if (!$already_checked_in): ?>
                           <!-- Tombol Presensi Masuk -->
-                          <button type="submit" name="check_in" value="1" class="btn btn-info btn-circle" id="check-in-btn" style="font-size: 20px; width: 100px; height: 100px;"
+                          <button type="submit" name="check_in" value="1" class="btn btn-primary btn-circle" id="check-in-btn" style="font-size: 20px; width: 100px; height: 100px;"
                             <?php if ($shift_status == 'belum mulai' || $shift_status == 'sudah selesai') echo 'disabled'; ?> disabled>
                             <i class="fas fa-fw fa-sign-in-alt fa-2x"></i>
                           </button>
@@ -109,20 +106,23 @@
                         <?php else: ?>
                           <!-- Tombol Presensi Keluar -->
                           <button type="submit" name="check_out" value="1" class="btn btn-danger btn-circle" id="check-out-btn" style="font-size: 20px; width: 100px; height: 100px;"
-                            <?php if ($already_checked_out || $shift_status != 'sudah selesai') echo 'disabled'; ?> disabled>
+                            <?php if ($already_checked_out || $shift_status != 'sudah selesai' || $auto_checkout_message) echo 'disabled'; ?> disabled>
                             <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
                           </button>
 
                           <?php if ($already_checked_out): ?>
-                            <p class="text-danger pt-2">Sudah Presensi Keluar</p>
+                            <p class="text-danger pt-2"><?= $auto_checkout_message ?: 'Sudah Presensi Keluar'; ?></p>
                           <?php elseif ($shift_status == 'belum mulai'): ?>
                             <p class="text-warning pt-2">Shift Belum Mulai</p>
                           <?php elseif ($shift_status != 'sudah selesai'): ?>
                             <p class="text-danger pt-2" style="font-size: small;">Presensi keluar akan dibuka <br> jika waktu shift sudah selesai.</p>
+                          <?php elseif ($auto_checkout_message): ?>
+                            <p class="text-danger pt-2"><?= $auto_checkout_message; ?></p>
                           <?php else: ?>
                             <p class="font-weight-bold text-danger pt-2" id="check-out-status">Presensi Keluar!</p>
                           <?php endif; ?>
                         <?php endif; ?>
+
                       </div>
                     </div>
 
@@ -156,6 +156,8 @@
     // Jika sudah check-out, tombol aktifkan lokasi dinonaktifkan
     if (alreadyCheckedOut) {
       activateLocationBtn.disabled = true;
+      checkOutBtn.disabled = true;
+      document.getElementById("check-out-status").textContent = "Sudah Presensi Keluar";
     }
 
     function convertTo24HourTime(timeStr) {
@@ -170,10 +172,23 @@
     const now = new Date();
     const startShift = convertTo24HourTime(shiftStartTime);
     const endShift = convertTo24HourTime(shiftEndTime);
+    const gracePeriod = new Date(endShift.getTime() + 15 * 60 * 1000);
 
     // Aktivasi tombol lokasi jika waktu shift dimulai
     if (!alreadyCheckedOut && now >= startShift) {
       activateLocationBtn.disabled = false;
+    }
+
+    // Presensi keluar otomatis jika waktu sudah lewat masa toleransi
+    if (!alreadyCheckedOut && now > gracePeriod) {
+      checkOutBtn.disabled = true;
+      document.getElementById("check-out-status").textContent = "Keluar Otomatis";
+      Swal.fire({
+        icon: 'info',
+        title: 'Presensi Keluar Otomatis',
+        text: 'Anda telah presensi keluar secara otomatis karena waktu shift telah berakhir.',
+        confirmButtonText: 'Oke'
+      });
     }
 
     // Aktivasi tombol presensi keluar jika waktu shift selesai dan lokasi sudah aktif
@@ -198,7 +213,7 @@
             if (now >= startShift && now <= endShift) {
               checkInBtn.disabled = false;
             }
-            if (now > endShift) {
+            if (now > endShift && now <= gracePeriod) {
               checkOutBtn.disabled = false;
             }
           },

@@ -101,7 +101,7 @@
                  <!-- Card Body -->
                  <div class="card-body" style="max-height: 400px; overflow: scroll; overflow-x : hidden;">
                    <table class="table">
-                     <thead class="bg-info text-white">
+                     <thead class="bg-primary text-white">
                        <tr>
                          <th scope="col">#</th>
                          <th scope="col">Kode Department</th>
@@ -144,7 +144,7 @@
                  <div class="card-body" style="max-height: 370px;">
                    <div style="max-height: 300px; overflow-y: auto;">
                      <table class="table">
-                       <thead class="bg-info text-white">
+                       <thead class="bg-primary text-white">
                          <tr>
                            <th scope="col">#</th>
                            <th scope="col">Kode Shift</th>

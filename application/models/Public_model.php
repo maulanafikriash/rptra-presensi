@@ -33,21 +33,51 @@ class Public_model extends CI_Model
         $this->db->select('attendance.attendance_date AS attendance_date,
                            attendance.shift_id AS shift_id,
                            employee.employee_name AS employee_name,
-                           attendance.notes AS notes,
                            attendance.in_status AS in_status,
                            attendance.in_time AS in_time,
                            attendance.out_time AS out_time,
-                           attendance.out_status AS out_status');
+                           attendance.out_status AS out_status,
+                           shift.start_time AS shift_start,
+                           shift.end_time AS shift_end');
         $this->db->from('attendance');
         $this->db->join('employee', 'attendance.employee_id = employee.employee_id');
+        $this->db->join('shift', 'attendance.shift_id = shift.shift_id');
         $this->db->where('attendance.department_id', $dept);
         $this->db->where('attendance.attendance_date >=', $start);
         $this->db->where('attendance.attendance_date <=', $end);
         $this->db->where('attendance.presence_status', 1);
         $this->db->order_by('attendance.attendance_date', 'ASC');
 
-        return $this->db->get()->result_array();
+        $attendance = $this->db->get()->result_array();
+
+        // Atur nilai out_time dan out_status
+        foreach ($attendance as &$atd) {
+            $shift_end_plus_15 = date('H:i:s', strtotime($atd['shift_end'] . ' +15 minutes'));
+
+            if (!$atd['out_time']) {
+                if (date('H:i:s') < $atd['shift_end']) {
+                    $atd['out_time'] = "Belum waktunya";
+                    $atd['out_status'] = "Belum check out";
+                } elseif (date('H:i:s') >= $atd['shift_end'] && date('H:i:s') < $shift_end_plus_15) {
+                    $atd['out_time'] = "-";
+                    $atd['out_status'] = "belum check out";
+                } else {
+                    $atd['out_time'] = $shift_end_plus_15;
+                    $atd['out_status'] = "Otomatis";
+                   
+                }
+            } else {
+                if ($atd['out_time'] >= $atd['shift_end'] && $atd['out_time'] <= $shift_end_plus_15) {
+                    $atd['out_status'] = "Tepat waktu";
+                } elseif ($atd['out_time'] > $shift_end_plus_15) {
+                    $atd['out_status'] = "Melebihi Waktu";
+                }
+            }
+        }
+
+        return $attendance;
     }
+
 
     public function getAllEmployeeData($username)
     {
@@ -77,9 +107,9 @@ class Public_model extends CI_Model
     public function get_employee_department($employee_id)
     {
         $this->db->select('department_id');
-        $this->db->from('attendance'); 
+        $this->db->from('attendance');
         $this->db->where('employee_id', $employee_id);
-        
+
         $query = $this->db->get();
         return ($query->num_rows() > 0) ? $query->row()->department_id : null;
     }
@@ -87,7 +117,7 @@ class Public_model extends CI_Model
     public function get_employee_shift($employee_id)
     {
         $this->db->select('shift_id');
-        $this->db->from('employee'); 
+        $this->db->from('employee');
         $this->db->where('employee_id', $employee_id);
 
         $query = $this->db->get();

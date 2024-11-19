@@ -58,7 +58,7 @@
                           </td>
                         <?php else : ?>
                           <td class=" align-middle text-center">
-                            <a href="<?= base_url('master/a_users/') . $dt['e_id'] . '/' . $dt['d_id']; ?>" class="btn btn-info">Create Account</a>
+                            <a href="<?= base_url('master/a_users/') . $dt['e_id'] . '/' . $dt['d_id']; ?>" class="btn btn-primary">Create Account</a>
                           </td>
                           <td class="text-center align-middle">
                             <button class="btn btn-primary btn-circle" disabled>
