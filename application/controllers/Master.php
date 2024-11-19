@@ -59,9 +59,17 @@ class Master extends CI_Controller
 
   private function _addDept()
   {
+    // Mengambil data dari form
+    $d_id = $this->input->post('d_id');  
+    $d_name = $this->input->post('d_name');
+
+    // ID dalam huruf kapital
+    $d_id = strtoupper($d_id);
+    $d_name = ucwords(strtolower($d_name)); 
+
     $data = [
-      'department_id' => $this->input->post('d_id'),
-      'department_name' => $this->input->post('d_name')
+      'department_id' => $d_id,
+      'department_name' => $d_name
     ];
 
     $checkId = $this->db->get_where('department', ['department_id' => $data['department_id']])->num_rows();
@@ -616,7 +624,7 @@ class Master extends CI_Controller
       $updated = $this->db->update('attendance', [
         'presence_status' => $presence_status,
         'in_time' => date('H:i:s')
-    ]);
+      ]);
 
       if ($updated) {
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Status presensi berhasil diperbarui!</div>');

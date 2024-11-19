@@ -106,20 +106,23 @@
                         <?php else: ?>
                           <!-- Tombol Presensi Keluar -->
                           <button type="submit" name="check_out" value="1" class="btn btn-danger btn-circle" id="check-out-btn" style="font-size: 20px; width: 100px; height: 100px;"
-                            <?php if ($already_checked_out || $shift_status != 'sudah selesai') echo 'disabled'; ?> disabled>
+                            <?php if ($already_checked_out || $shift_status != 'sudah selesai' || $auto_checkout_message) echo 'disabled'; ?> disabled>
                             <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
                           </button>
 
                           <?php if ($already_checked_out): ?>
-                            <p class="text-danger pt-2">Sudah Presensi Keluar</p>
+                            <p class="text-danger pt-2"><?= $auto_checkout_message ?: 'Sudah Presensi Keluar'; ?></p>
                           <?php elseif ($shift_status == 'belum mulai'): ?>
                             <p class="text-warning pt-2">Shift Belum Mulai</p>
                           <?php elseif ($shift_status != 'sudah selesai'): ?>
                             <p class="text-danger pt-2" style="font-size: small;">Presensi keluar akan dibuka <br> jika waktu shift sudah selesai.</p>
+                          <?php elseif ($auto_checkout_message): ?>
+                            <p class="text-danger pt-2"><?= $auto_checkout_message; ?></p>
                           <?php else: ?>
                             <p class="font-weight-bold text-danger pt-2" id="check-out-status">Presensi Keluar!</p>
                           <?php endif; ?>
                         <?php endif; ?>
+
                       </div>
                     </div>
 
@@ -153,6 +156,8 @@
     // Jika sudah check-out, tombol aktifkan lokasi dinonaktifkan
     if (alreadyCheckedOut) {
       activateLocationBtn.disabled = true;
+      checkOutBtn.disabled = true;
+      document.getElementById("check-out-status").textContent = "Sudah Presensi Keluar";
     }
 
     function convertTo24HourTime(timeStr) {
@@ -167,10 +172,23 @@
     const now = new Date();
     const startShift = convertTo24HourTime(shiftStartTime);
     const endShift = convertTo24HourTime(shiftEndTime);
+    const gracePeriod = new Date(endShift.getTime() + 15 * 60 * 1000);
 
     // Aktivasi tombol lokasi jika waktu shift dimulai
     if (!alreadyCheckedOut && now >= startShift) {
       activateLocationBtn.disabled = false;
+    }
+
+    // Presensi keluar otomatis jika waktu sudah lewat masa toleransi
+    if (!alreadyCheckedOut && now > gracePeriod) {
+      checkOutBtn.disabled = true;
+      document.getElementById("check-out-status").textContent = "Keluar Otomatis";
+      Swal.fire({
+        icon: 'info',
+        title: 'Presensi Keluar Otomatis',
+        text: 'Anda telah presensi keluar secara otomatis karena waktu shift telah berakhir.',
+        confirmButtonText: 'Oke'
+      });
     }
 
     // Aktivasi tombol presensi keluar jika waktu shift selesai dan lokasi sudah aktif
@@ -195,7 +213,7 @@
             if (now >= startShift && now <= endShift) {
               checkInBtn.disabled = false;
             }
-            if (now > endShift) {
+            if (now > endShift && now <= gracePeriod) {
               checkOutBtn.disabled = false;
             }
           },

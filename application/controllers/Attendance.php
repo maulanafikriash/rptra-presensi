@@ -70,6 +70,30 @@ class Attendance extends CI_Controller
             'employee_id' => $employee_id,
             'attendance_date' => $today
         ])->row_array();
+
+        // Validasi presensi keluar otomatis
+        $outGracePeriod = strtotime($shiftData['end_time'] . ' +15 minutes');
+        if (!empty($attendance) && !is_null($attendance['out_time'])) {
+            $d['already_checked_out'] = true;
+            $d['auto_checkout_message'] = 'Sudah presensi keluar';
+        } elseif ($currentTime > $outGracePeriod) {
+            $d['already_checked_out'] = true;
+            $d['auto_checkout_message'] = 'keluar otomatis';
+
+            // Update status di database jika belum presensi keluar
+            if (is_null($attendance['out_time'])) {
+                $this->db->where('employee_id', $employee_id)
+                    ->where('attendance_date', $today)
+                    ->update('attendance', [
+                        'out_time' => date('H:i:s', $outGracePeriod),
+                        'out_status' => 'Otomatis'
+                    ]);
+            }
+        } else {
+            $d['already_checked_out'] = false;
+            $d['auto_checkout_message'] = '';
+        }
+
         $d['already_checked_in'] = !empty($attendance);
         $d['already_checked_out'] = !empty($attendance) && !is_null($attendance['out_time']);
         log_message('info', 'Check-in query: ' . $this->db->last_query());
@@ -80,10 +104,8 @@ class Attendance extends CI_Controller
         // Menangani dua aksi: check-in dan check-out
         if ($this->input->post('check_in')) {
             log_message('info', 'Tombol Check-In diklik');
-            // Logika presensi masuk
             $this->handleCheckIn($d);
         } elseif ($this->input->post('check_out')) {
-            // Logika presensi keluar
             $this->checkOut();
         }
 
@@ -131,7 +153,6 @@ class Attendance extends CI_Controller
         $presence_status = 1; // Hadir
         log_message('info', 'Attendance status: ' . $inStatus);
 
-        // Siapkan data untuk insert ke database
         $attendanceData = [
             'username' => $username,
             'employee_id' => $employee_id,
@@ -169,106 +190,63 @@ class Attendance extends CI_Controller
     {
         log_message('info', 'checkOut method called');
         $d['account'] = $this->Public_model->getAccount($this->session->userdata('username'));
-         // Ambil data employee_id dari session atau akun login
-         $employee_id = $d['account']['id'];
-         $today = date('Y-m-d', time());
-         $outTime = date('H:i:s');
-         $latitude = $this->input->post('latitude');
-         $longitude = $this->input->post('longitude');
- 
-         // Cek data presensi keluar untuk employee_id dan tanggal hari ini
-         $attendance = $this->db->get_where('attendance', [
-             'employee_id' => $employee_id,
-             'attendance_date' => $today
-         ])->row_array();
- 
-         if ($attendance) {
-             if (!is_null($attendance['out_time'])) {
-                 // Jika out_time sudah ada, cegah double check-out
-                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Anda sudah melakukan presensi keluar!</div>');
-                 redirect('attendance');
-             }     
- 
-             // Tentukan status keluar berdasarkan waktu akhir shift
-             $endShiftTime = strtotime($attendance['shift_end']);
- 
-             if ($outTime <= $endShiftTime + 900 && $outTime >= $endShiftTime) { // 15 menit setelah waktu berakhir
+
+        // Ambil data employee_id
+        $employee_id = $d['account']['id'];
+        $today = date('Y-m-d', time());
+        $outTime = time();
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
+
+        // Cek data presensi keluar
+        $attendance = $this->db->get_where('attendance', [
+            'employee_id' => $employee_id,
+            'attendance_date' => $today
+        ])->row_array();
+
+        if ($attendance) {
+            if (!is_null($attendance['out_time'])) {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Anda sudah melakukan presensi keluar!</div>');
+                redirect('attendance');
+            }
+
+            // Tentukan status keluar
+            $endShiftTime = strtotime($attendance['shift_end']);
+            $outGracePeriod = $endShiftTime + 900;
+
+            if ($outTime <= $outGracePeriod) {
                 $outStatus = 'Tepat Waktu';
             } else {
-                $outStatus = 'Melebihi Waktu'; // Jika keluar lebih dari 15 menit setelah waktu berakhir
+                $outStatus = 'Otomatis';
             }
-            
-             $presence_status = 1; // Tetap 'Hadir' setelah check-out
- 
-             $value = [
-                 'out_time' => $outTime,
-                 'out_status' => $outStatus,
-                 'presence_status' => $presence_status,
-                 'check_out_latitude' => $latitude,
-                 'check_out_longitude' => $longitude
-             ];
- 
-             // Update berdasarkan employee_id dan tanggal
-             $this->db->where('employee_id', $employee_id);
-             $this->db->where('attendance_date', $today);
-             $this->db->update('attendance', $value);
 
-            // Log query update waktu keluar
-            log_message('info', 'Update query: ' . $this->db->last_query());
+            $value = [
+                'out_time' => date('H:i:s', $outTime),
+                'out_status' => $outStatus,
+                'presence_status' => 1, // Tetap hadir
+                'check_out_latitude' => $latitude,
+                'check_out_longitude' => $longitude
+            ];
+
+            $this->db->where('employee_id', $employee_id);
+            $this->db->where('attendance_date', $today);
+            $this->db->update('attendance', $value);
 
             if ($this->db->affected_rows() > 0) {
-                log_message('info', 'Attendance check-out updated successfully');
                 $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil Presensi Keluar!</div>');
             } else {
-                log_message('error', 'Failed to update attendance check-out');
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Gagal Presensi Keluar!</div>');
             }
         } else {
-            log_message('error', 'No check-in record found for today');
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Tidak ada catatan presensi masuk untuk hari ini!</div>');
         }
 
         redirect('attendance');
     }
 
-    // Method untuk auto check-out (keluar otomatis)
-    public function autoCheckOut()
-    {
-        date_default_timezone_set('Asia/Jakarta');
-        $currentTime = date('H:i:s');
-
-        $today = date('Y-m-d');
-        $queryCheckIns = $this->db->query("SELECT a.*, s.end_time AS shift_end FROM attendance a
-                                         JOIN shift s ON a.shift_id = s.shift_id
-                                         WHERE a.attendance_date = '$today' AND a.out_time IS NULL");
-
-        foreach ($queryCheckIns->result_array() as $attendance) {
-            $username = $attendance['username'];
-            $shiftEnd = $attendance['shift_end'];
-
-            // Jika waktu saat ini sudah melewati waktu akhir shift lebih dari 30 menit
-            if (strtotime($currentTime) >= strtotime($shiftEnd) + 1800) { // 30 menit setelah shift berakhir
-                $outTime = date('H:i:s', strtotime($shiftEnd) + 900); // Set waktu keluar otomatis
-                $status = 'Keluar Otomatis';
-
-                // Update data presensi
-                $this->db->where('username', $username);
-                $this->db->where('attendance_date', $today);
-                $this->db->update('attendance', [
-                    'out_time' => $outTime,
-                    'out_status' => $status
-                ]);
-
-                log_message('info', "Auto check-out untuk $username pada waktu $outTime dengan status $status");
-            }
-        }
-    }
-
     public function history()
     {
         $data['title'] = 'Riwayat Presensi';
-
-        // Ambil data akun pengguna yang sedang login
         $data['account'] = $this->Public_model->getAccount($this->session->userdata('username'));
 
         $employee_id = $data['account']['id'];
@@ -320,8 +298,6 @@ class Attendance extends CI_Controller
     public function change_password()
     {
         $data['title'] = 'Change Password';
-
-        // Ambil data akun pengguna yang sedang login
         $data['account'] = $this->Public_model->getAccount($this->session->userdata('username'));
 
         $employee_id = $data['account']['id'];
@@ -330,7 +306,7 @@ class Attendance extends CI_Controller
             show_error('Employee ID is required but not found.', 400);
         }
 
-        // Ambil data pegawai berdasarkan employee_id
+        // data pegawai berdasarkan employee_id
         $data['employee'] = $this->db->get_where('employee', ['employee_id' => $employee_id])->row_array();
 
         if (!$data['employee']) {
@@ -353,7 +329,7 @@ class Attendance extends CI_Controller
             $this->load->view('templates/header', $data);
             $this->load->view('templates/sidebar');
             $this->load->view('templates/topbar');
-            $this->load->view('attendance/change_password/index', $data); // pastikan view change_password ada di folder views/attendance
+            $this->load->view('attendance/change_password/index', $data);
             $this->load->view('templates/footer');
         } else {
             $username = $this->session->userdata('username');
@@ -367,7 +343,7 @@ class Attendance extends CI_Controller
 
             // Validasi password aktif (password lama) harus cocok dengan password di database
             if ($user && password_verify($current_password, $user->password)) {
-                // Pastikan password baru tidak sama dengan password aktif (lama)
+                // password baru tidak sama dengan password aktif (lama)
                 if (password_verify($new_password, $user->password)) {
                     $this->session->set_flashdata('error', 'Password baru tidak boleh sama dengan password aktif.');
                     redirect('attendance/change_password/index');
