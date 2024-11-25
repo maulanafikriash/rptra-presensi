@@ -43,14 +43,21 @@
         <button type="submit" class="btn btn-primary">Filter</button>
     </form>
 
-
-    <!-- Tombol Cetak PDF -->
-    <div class="text-right mb-2">
-        <a href="<?= base_url('report/print_attendance_history/' . $employee['employee_id'] . '?month=' . $month . '&year=' . $year); ?>" class="btn btn-danger btn-icon-split" target="_blank">
+    <div class="d-flex justify-content-end mb-2">
+        <a href="<?= base_url('report/print_pdf_attendance_history/' . $employee['employee_id'] . '?month=' . $month . '&year=' . $year); ?>"
+            class="btn btn-danger btn-icon-split mr-2"
+            target="_blank">
             <span class="icon text-white">
                 <i class="fas fa-file-pdf"></i>
             </span>
             <span class="text">Cetak PDF</span>
+        </a>
+        <a href="<?= base_url('report/print_excel_attendance_history/' . $employee['employee_id'] . '?month=' . $month . '&year=' . $year); ?>"
+            class="btn btn-success btn-icon-split">
+            <span class="icon text-white">
+                <i class="fas fa-file-excel"></i>
+            </span>
+            <span class="text">Cetak Excel</span>
         </a>
     </div>
 
@@ -99,21 +106,21 @@
                         echo "<td><strong  class='h5'>$dayCounter</strong><br>";
 
                         // Tampilkan ikon edit dan lokasi hanya jika tanggal saat ini atau sebelumnya
-                    if ($currentLoopDate <= $currentDate) {
-                        echo "<a href='#' class='float-right' data-target='#editAttendanceModal' data-toggle='modal' data-day='$dayCounter'><i class='fas fa-edit'></i></a><br>";
+                        if ($currentLoopDate <= $currentDate) {
+                            echo "<a href='#' class='float-right' data-target='#editAttendanceModal' data-toggle='modal' data-day='$dayCounter'><i class='fas fa-edit'></i></a><br>";
 
-                        echo "<div class='d-flex flex-column align-items-start'>";
-                        // Tampilkan ikon lokasi presensi masuk
-                        echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Masuk' onclick=\"showMap(" . ($attendance[$dayCounter]['check_in_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_in_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check In')\">
+                            echo "<div class='d-flex flex-column align-items-start'>";
+                            // Tampilkan ikon lokasi presensi masuk
+                            echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Masuk' onclick=\"showMap(" . ($attendance[$dayCounter]['check_in_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_in_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check In')\">
                             <i class='fas fa-map-marker-alt text-success'></i>
                         </a>";
 
-                        // Tampilkan ikon lokasi presensi keluar
-                        echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out')\">
+                            // Tampilkan ikon lokasi presensi keluar
+                            echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out')\">
                             <i class='fas fa-map-marker-alt text-danger'></i>
                         </a>";
-                        echo "</div>";
-                    }
+                            echo "</div>";
+                        }
 
 
                         // Cek apakah hari ini adalah hari Minggu

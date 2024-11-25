@@ -12,6 +12,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
  */
 
 use \Mpdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Report extends CI_Controller
 {
@@ -100,7 +102,7 @@ class Report extends CI_Controller
     $mpdf->Output('Laporan_Kehadiran_Pegawai.pdf', 'I');
   }
 
-  public function print_attendance_history($employee_id)
+  public function print_pdf_attendance_history($employee_id)
   {
     // Ambil data pegawai
     $employee = $this->db->get_where('employee', ['employee_id' => $employee_id])->row_array();
@@ -173,4 +175,99 @@ class Report extends CI_Controller
     $pdf->WriteHTML($html);
     $pdf->Output("Riwayat_Presensi_{$employee['employee_name']}_{$month}_{$year}.pdf", 'I');
   }
+
+  public function print_excel_attendance_history($employee_id)
+{
+
+
+    // Ambil data pegawai
+    $employee = $this->db->get_where('employee', ['employee_id' => $employee_id])->row_array();
+    if (!$employee) {
+        show_error('Employee not found', 404);
+    }
+
+    // Ambil parameter bulan dan tahun
+    $month = $this->input->get('month') ?: date('m');
+    $year = $this->input->get('year') ?: date('Y');
+
+    // Ambil jumlah hari dalam bulan
+    $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $currentDate = date('Y-m-d'); // Tanggal hari ini
+
+    // Ambil data presensi sesuai bulan dan tahun
+    $this->db->select('attendance_date AS date, presence_status');
+    $this->db->from('attendance');
+    $this->db->where('employee_id', $employee_id);
+    $this->db->where('MONTH(attendance_date)', $month);
+    $this->db->where('YEAR(attendance_date)', $year);
+    $attendanceData = $this->db->get()->result_array();
+
+    // Buat array dengan semua tanggal di bulan yang dipilih
+    $attendance = [];
+    for ($day = 1; $day <= $daysInMonth; $day++) {
+        $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
+
+        // Tentukan status berdasarkan hari dan tanggal
+        if (date('w', strtotime($date)) == 0) { // Hari Minggu
+            $attendance[$date] = 'Libur';
+        } elseif ($date <= $currentDate) {
+            $attendance[$date] = 'Tidak Hadir'; // Set default untuk hari yang sudah lewat
+        } else {
+            $attendance[$date] = 'Tidak Ada Data'; // Set default untuk hari yang belum tiba
+        }
+    }
+
+    // Isi array dengan data yang ada
+    foreach ($attendanceData as $att) {
+        $date = $att['date'];
+        switch ($att['presence_status']) {
+            case 1:
+                $attendance[$date] = 'Hadir';
+                break;
+            case 0:
+                $attendance[$date] = 'Tidak Hadir';
+                break;
+            case 2:
+                $attendance[$date] = 'Libur';
+                break;
+            default:
+                $attendance[$date] = 'Tidak Ada Data';
+        }
+    }
+
+    // Buat file Excel
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Set header file Excel
+    $sheet->setCellValue('A1', 'Riwayat Presensi Pegawai');
+    $sheet->setCellValue('A2', 'Nama Pegawai: ' . $employee['employee_name']);
+    $sheet->setCellValue('A3', 'Bulan: ' . date('F', mktime(0, 0, 0, $month, 1)) . " $year");
+
+    // Set header tabel
+    $sheet->setCellValue('A5', 'Tanggal');
+    $sheet->setCellValue('B5', 'Status Presensi');
+
+    // Isi data tabel
+    $row = 6;
+    foreach ($attendance as $date => $status) {
+        $sheet->setCellValue('A' . $row, date('d-m-Y', strtotime($date)));
+        $sheet->setCellValue('B' . $row, $status);
+        $row++;
+    }
+
+    // Set nama file
+    $filename = "Riwayat_Presensi_{$employee['employee_name']}_{$month}_{$year}.xlsx";
+
+    // Konfigurasi header untuk download
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+}
+
+
+
 }
