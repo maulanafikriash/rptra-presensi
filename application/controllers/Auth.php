@@ -22,7 +22,7 @@ class Auth extends CI_Controller
     public function index()
     {
         if ($this->session->userdata('username')) {
-            $role_id = $this->session->userdata('user_role_id'); // Ubah 'role_id' menjadi 'user_role_id'
+            $role_id = $this->session->userdata('user_role_id');
             switch ($role_id) {
                 case 1:
                     redirect('admin');
