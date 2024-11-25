@@ -25,19 +25,30 @@ class Admin extends CI_Controller
 
   public function index()
   {
-    // Menghitung jumlah karyawan berdasarkan departemen
-    $dquery = "SELECT department.department_id AS d_id, COUNT(attendance.employee_id) AS qty 
-                   FROM attendance 
-                   INNER JOIN department ON attendance.department_id = department.department_id 
-                   GROUP BY department.department_id";
+    // jumlah pegawai berdasarkan departemen
+    $dquery = "
+ SELECT 
+   d.department_id AS d_id, 
+   d.department_name AS d_name, 
+   COUNT(e.employee_id) AS qty 
+ FROM department d
+ LEFT JOIN employee e ON d.department_id = e.department_id
+ GROUP BY d.department_id
+ ORDER BY d.department_id ASC
+";
     $d['d_list'] = $this->db->query($dquery)->result_array();
 
-    // Menghitung jumlah karyawan berdasarkan shift
-    $squery = "SELECT shift.shift_id AS s_id, COUNT(employee.employee_id) AS qty 
-                    FROM employee 
-                    INNER JOIN attendance ON employee.employee_id = attendance.employee_id 
-                    INNER JOIN shift ON employee.shift_id = shift.shift_id 
-                    GROUP BY shift.shift_id";
+    // jumlah pegawai berdasarkan shift
+    $squery = "
+ SELECT 
+   s.shift_id AS s_id, 
+   CONCAT(s.start_time, ' - ', s.end_time) AS shift_time, 
+   COUNT(e.employee_id) AS qty 
+ FROM shift s
+ LEFT JOIN employee e ON s.shift_id = e.shift_id
+ GROUP BY s.shift_id
+ ORDER BY s.shift_id ASC
+";
     $d['s_list'] = $this->db->query($squery)->result_array();
 
     // Dashboard
@@ -48,7 +59,7 @@ class Admin extends CI_Controller
     $this->load->view('templates/dashboard_header', $d);
     $this->load->view('templates/sidebar');
     $this->load->view('templates/topbar');
-    $this->load->view('admin/index', $d); 
+    $this->load->view('admin/index', $d);
     $this->load->view('templates/dashboard_footer');
   }
 }
