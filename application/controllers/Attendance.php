@@ -76,9 +76,20 @@ class Attendance extends CI_Controller
         if (!empty($attendance) && !is_null($attendance['out_time'])) {
             $d['already_checked_out'] = true;
             $d['auto_checkout_message'] = 'Sudah presensi keluar';
+
+            // Cek apakah presensi keluar dilakukan dalam rentang waktu 15 menit
+            $actualOutTime = strtotime($attendance['out_time']);
+            if ($actualOutTime <= $outGracePeriod) {
+                $this->db->where('employee_id', $employee_id)
+                    ->where('attendance_date', $today)
+                    ->update('attendance', [
+                        'out_time' => date('H:i:s'),
+                        'out_status' => 'Tepat Waktu'
+                    ]);
+            }
         } elseif ($currentTime > $outGracePeriod) {
             $d['already_checked_out'] = true;
-            $d['auto_checkout_message'] = 'keluar otomatis';
+            $d['auto_checkout_message'] = 'Keluar otomatis';
 
             // Update status di database jika belum presensi keluar
             if (is_null($attendance['out_time'])) {
@@ -194,7 +205,7 @@ class Attendance extends CI_Controller
         // Ambil data employee_id
         $employee_id = $d['account']['id'];
         $today = date('Y-m-d', time());
-        $outTime = time();
+        $outTime = date('H:i:s');
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');
 

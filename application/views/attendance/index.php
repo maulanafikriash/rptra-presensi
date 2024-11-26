@@ -205,8 +205,8 @@
             // Memunculkan SweetAlert2 modal
             Swal.fire({
               icon: 'success',
-              title: 'Lokasi Berhasil Diaktifkan',
-              text: 'Lokasi Anda telah berhasil diaktifkan, silahkan melakukan presensi.',
+              title: 'Sukses',
+              text: 'Lokasi Anda Berhasil Diaktifkan',
               confirmButtonText: 'Oke'
             });
 

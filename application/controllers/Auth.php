@@ -36,10 +36,16 @@ class Auth extends CI_Controller
         $d['title'] = 'Login Page';
 
         // Form Validation
-        $this->form_validation->set_rules('username', 'Username', 'required|trim');
-        $this->form_validation->set_rules('password', 'Password', 'required|trim|min_length[6]');
-
+        $this->form_validation->set_rules('username', 'Username', 'required|trim', [
+            'required' => 'Username wajib diisi.'
+        ]);
+        $this->form_validation->set_rules('password', 'Password', 'required|trim|min_length[6]', [
+            'required' => 'Password wajib diisi.',
+            'min_length' => 'Password harus memiliki minimal 6 karakter.'
+        ]);
+        
         if ($this->form_validation->run() == false) {
+            
             $this->load->view('templates/auth_header', $d);
             $this->load->view('auth/index');
             $this->load->view('templates/auth_footer');
@@ -71,12 +77,12 @@ class Auth extends CI_Controller
                 }
             } else {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-                  Wrong password!</div>');
+                  Password Salah!</div>');
                 redirect('auth');
             }
         } else {
             $this->session->set_flashdata('message', '<div class="alert alert-warning" role="alert">
-            Username Not Found</div>');
+            Username Tidak Ditemukan</div>');
             redirect('auth');
         }
 
