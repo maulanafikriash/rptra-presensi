@@ -50,31 +50,6 @@ class Public_model extends CI_Model
 
         $attendance = $this->db->get()->result_array();
 
-        // Atur nilai out_time dan out_status
-        foreach ($attendance as &$atd) {
-            $shift_end_plus_15 = date('H:i:s', strtotime($atd['shift_end'] . ' +15 minutes'));
-
-            if (!$atd['out_time']) {
-                if (date('H:i:s') < $atd['shift_end']) {
-                    $atd['out_time'] = "Belum waktunya";
-                    $atd['out_status'] = "Belum check out";
-                } elseif (date('H:i:s') >= $atd['shift_end'] && date('H:i:s') < $shift_end_plus_15) {
-                    $atd['out_time'] = "-";
-                    $atd['out_status'] = "belum check out";
-                } else {
-                    $atd['out_time'] = $shift_end_plus_15;
-                    $atd['out_status'] = "Otomatis";
-                   
-                }
-            } else {
-                if ($atd['out_time'] >= $atd['shift_end'] && $atd['out_time'] <= $shift_end_plus_15) {
-                    $atd['out_status'] = "Tepat waktu";
-                } elseif ($atd['out_time'] > $shift_end_plus_15) {
-                    $atd['out_status'] = "Melebihi Waktu";
-                }
-            }
-        }
-
         return $attendance;
     }
 
