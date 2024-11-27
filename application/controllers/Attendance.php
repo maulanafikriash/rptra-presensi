@@ -73,24 +73,10 @@ class Attendance extends CI_Controller
 
         // Validasi presensi keluar otomatis
         $outGracePeriod = strtotime($shiftData['end_time'] . ' +15 minutes');
-        if (!empty($attendance) && !is_null($attendance['out_time'])) {
-            $d['already_checked_out'] = true;
-            $d['auto_checkout_message'] = 'Sudah presensi keluar';
-
-            // Cek apakah presensi keluar dilakukan dalam rentang waktu 15 menit
-            $actualOutTime = strtotime($attendance['out_time']);
-            if ($actualOutTime <= $outGracePeriod) {
-                $this->db->where('employee_id', $employee_id)
-                    ->where('attendance_date', $today)
-                    ->update('attendance', [
-                        'out_time' => date('H:i:s'),
-                        'out_status' => 'Tepat Waktu'
-                    ]);
-            }
-        } elseif ($currentTime > $outGracePeriod) {
+        if ($currentTime > $outGracePeriod) {
             $d['already_checked_out'] = true;
             $d['auto_checkout_message'] = 'Keluar otomatis';
-
+        
             // Update status di database jika belum presensi keluar
             if (is_null($attendance['out_time'])) {
                 $this->db->where('employee_id', $employee_id)
