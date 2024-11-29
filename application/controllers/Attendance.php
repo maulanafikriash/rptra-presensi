@@ -75,8 +75,8 @@ class Attendance extends CI_Controller
         $outGracePeriod = strtotime($shiftData['end_time'] . ' +15 minutes');
         if ($currentTime > $outGracePeriod) {
             $d['already_checked_out'] = true;
-            $d['auto_checkout_message'] = 'Keluar otomatis';
-        
+            $d['auto_checkout_message'] = 'Sudah Presensi keluar';
+
             // Update status di database jika belum presensi keluar
             if (is_null($attendance['out_time'])) {
                 $this->db->where('employee_id', $employee_id)
@@ -144,9 +144,10 @@ class Attendance extends CI_Controller
 
         log_message('info', 'In time: ' . $in_time);
 
-        // Tentukan in_status dan presence_status berdasarkan 10 menit setelah startTime
-        $allowedTime = date('H:i:s', strtotime($startTime . ' +10 minutes'));
-        $inStatus = (strtotime($in_time) <= strtotime($allowedTime)) ? 'Tepat Waktu' : 'Terlambat';
+        // in_status dan presence_status berdasarkan 15 menit setelah startTime
+        $allowedTime = date('H:i:00', strtotime($startTime . ' +15 minutes'));
+        $inTimeMinute = date('H:i:00', strtotime($in_time));
+        $inStatus = (strtotime($inTimeMinute) <= strtotime($allowedTime)) ? 'Tepat Waktu' : 'Terlambat';
         $presence_status = 1; // Hadir
         log_message('info', 'Attendance status: ' . $inStatus);
 
@@ -218,7 +219,7 @@ class Attendance extends CI_Controller
             }
 
             $value = [
-                'out_time' => date('H:i:s', $outTime),
+                'out_time' => $outTime,
                 'out_status' => $outStatus,
                 'presence_status' => 1, // Tetap hadir
                 'check_out_latitude' => $latitude,

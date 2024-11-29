@@ -34,7 +34,7 @@
     </div>
     <div class="department-info">
       <p><strong>Department :</strong> <?= $dept_name ?></p>
-      <p><strong>Kode Department :</strong> <?= $dept ?></p>
+      <p><strong>ID Department :</strong> <?= $dept ?></p>
     </div>
     <div class="date-range">
       <?php if ($start != null || $end != null) : ?>

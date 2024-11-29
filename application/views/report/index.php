@@ -16,25 +16,27 @@
     <div class="col-lg-7 ml-auto mb-3 float-right">
       <form action="" method="GET">
         <div class="row">
-          <div class="col-3 offset-lg-1">
-            <input type="date" name="start" class="form-control">
+          <div class="col-3 ">
+            <input type="date" name="start" class="form-control" value="<?= isset($_GET['start']) ? $_GET['start'] : '' ?>">
             <?= form_error('start', '<small class="text-danger pl-3">', '</small>') ?>
           </div>
           <div class="col-3">
-            <input type="date" name="end" class="form-control">
+            <input type="date" name="end" class="form-control" value="<?= isset($_GET['end']) ? $_GET['end'] : '' ?>">
             <?= form_error('end', '<small class="text-danger pl-3">', '</small>') ?>
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <select class="form-control" name="dept">
-              <option disabled>Department</option>
+              <option disabled <?= !isset($_GET['dept']) ? 'selected' : '' ?>>Department</option>
               <?php foreach ($department as $d) : ?>
-                <option value="<?= $d['department_id']; ?>"><?= $d['department_name']; ?></option>
+                <option value="<?= $d['department_id']; ?>" <?= isset($_GET['dept']) && $_GET['dept'] == $d['department_id'] ? 'selected' : '' ?>>
+                  <?= $d['department_name']; ?>
+                </option>
               <?php endforeach; ?>
             </select>
             <?= form_error('dept', '<small class="text-danger pl-3">', '</small>') ?>
           </div>
           <div class="col-2 d-flex justify-content-end">
-            <button type="submit" class="btn btn-success btn-fill" style="width: 100px; padding: 5px 10px;">Tampilkan</button>
+            <button type="submit" class="btn btn-success btn-fill shadow-sm" style="width: 100px; padding: 5px 10px;">Tampilkan</button>
           </div>
         </div>
       </form>
@@ -151,8 +153,8 @@
         <div class="mt-4">
           <h5>Keterangan Kolom Status Masuk:</h5>
           <ul>
-            <li><strong>Tepat Waktu</strong>: Pegawai melakukan presensi dalam rentang waktu 10 menit setelah waktu mulai shift.</li>
-            <li><strong>Terlambat</strong>: Pegawai melakukan presensi setelah 10 menit dari waktu mulai shift.</li>
+            <li><strong>Tepat Waktu</strong>: Pegawai melakukan presensi dalam rentang waktu 15 menit setelah waktu mulai shift.</li>
+            <li><strong>Terlambat</strong>: Pegawai melakukan presensi setelah 15 menit dari waktu mulai shift.</li>
           </ul>
           <h5>Keterangan Kolom Status Keluar:</h5>
           <ul>

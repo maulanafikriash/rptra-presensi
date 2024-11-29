@@ -10,6 +10,7 @@
   <meta name="author" content="">
 
   <title><?= $title; ?></title>
+  <link rel="icon" href="<?= base_url('assets/'); ?>img/favicon.png" type="image/png">
 
   <!-- Custom fonts for this template-->
   <link href="<?= base_url('assets/'); ?>vendorss/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

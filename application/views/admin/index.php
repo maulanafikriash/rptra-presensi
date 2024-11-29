@@ -91,7 +91,7 @@
           <table class="table table-bordered">
             <thead class="bg-primary text-white">
               <tr>
-                <th>Kode Department</th>
+                <th>ID Department</th>
                 <th>Nama Department</th>
                 <th>Jumlah Pegawai</th>
               </tr>
