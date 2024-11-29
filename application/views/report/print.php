@@ -18,8 +18,15 @@
         'Asia/Jakarta',
         IntlDateFormatter::GREGORIAN
       );
-      $fmt->setPattern('EEEE, dd MMMM yyyy'); 
+      $fmt->setPattern('EEEE, dd MMMM yyyy');
       return $fmt->format(new DateTime($tanggal));
+    }
+
+    function getCheckoutTime($shift_end_time)
+    {
+      $shift_end = new DateTime($shift_end_time);
+      $shift_end->modify('+15 minutes');
+      return $shift_end->format('H:i:s');
     }
     ?>
     <div class="header-section">
@@ -27,7 +34,7 @@
     </div>
     <div class="department-info">
       <p><strong>Department :</strong> <?= $dept_name ?></p>
-      <p><strong>Kode Department :</strong> <?= $dept ?></p>
+      <p><strong>ID Department :</strong> <?= $dept ?></p>
     </div>
     <div class="date-range">
       <?php if ($start != null || $end != null) : ?>
@@ -37,10 +44,10 @@
       <?php endif; ?>
     </div>
 
-    <table>
+    <table border="1" cellpadding="5" cellspacing="0">
       <thead>
         <tr>
-          <th>#</th>
+          <th>No</th>
           <th>Tanggal</th>
           <th>Nama</th>
           <th>Shift</th>
@@ -51,8 +58,8 @@
         </tr>
       </thead>
       <tbody>
-        <?php $i = 1;
-        foreach ($attendance as $date => $attendances) : // Looping berdasarkan tanggal 
+        <?php $i = 1; ?>
+        <?php foreach ($attendance as $date => $attendances) : // Looping berdasarkan tanggal 
         ?>
           <?php foreach ($attendances as $index => $atd) : ?>
             <tr>
@@ -78,8 +85,53 @@
               </td>
               <td><?= $atd['in_time'] ? date('H:i:s', strtotime($atd['in_time'])) : 'Belum check in'; ?></td>
               <td><?= $atd['in_status']; ?></td>
-              <td><?= ($atd['out_time'] === "Belum waktunya") ? '-' : ($atd['out_time'] ?: 'Belum check out') ?></td>
-              <td><?= $atd['out_status'] ?: 'Belum check out'; ?></td>
+
+              <?php
+              // Variabel waktu
+              $current_time = date('H:i:s');
+              $shift_end_time = date('H:i:s', strtotime($atd['shift_end']));
+              $shift_end_plus_15 = date('H:i:s', strtotime('+15 minutes', strtotime($shift_end_time)));
+
+              // Cek apakah attendance_date sama dengan hari ini
+              $attendance_date = strtotime($date);
+              $today = strtotime(date('Y-m-d'));
+
+              // Skenario hanya berlaku jika attendance_date adalah hari ini
+              if ($attendance_date === $today) {
+                // Skenario 1: Waktu sekarang kurang dari akhir shift
+                if ($current_time < $shift_end_time) {
+                  $checkout = '-';
+                  $out_status = 'Belum waktunya';
+
+                  // Skenario 2: Waktu sekarang melewati akhir shift, tapi pegawai belum check out
+                } elseif ($current_time >= $shift_end_time && $current_time < $shift_end_plus_15 && empty($atd['out_time'])) {
+                  $checkout = '-';
+                  $out_status = 'Belum check out';
+
+                  // Skenario 3: Waktu sekarang melewati akhir shift +15 menit, tapi pegawai belum check out
+                } elseif ($current_time >= $shift_end_plus_15 && empty($atd['out_time'])) {
+                  $checkout = $shift_end_plus_15;
+                  $out_status = 'Otomatis';
+
+                  // Skenario 4: Pegawai sudah check out
+                } else {
+                  $checkout = $atd['out_time'] ? date('H:i:s', strtotime($atd['out_time'])) : '-';
+                  $out_status = $atd['out_status'] ?: '-';
+                }
+              } else {
+                // Skenario 3 berlaku untuk setiap waktu tanggal dan tahun
+                // Skenario 3: Waktu sekarang melewati akhir shift +15 menit, tapi pegawai belum check out
+                if (empty($atd['out_time'])) {
+                  $checkout = $shift_end_plus_15;
+                  $out_status = 'Otomatis';
+                } else {
+                  $checkout = $atd['out_time'] ? date('H:i:s', strtotime($atd['out_time'])) : '-';
+                  $out_status = $atd['out_status'] ?: '-';
+                }
+              }
+              ?>
+              <td><?= $checkout; ?></td>
+              <td><?= $out_status; ?></td>
             </tr>
           <?php endforeach; ?>
         <?php endforeach; ?>

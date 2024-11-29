@@ -30,29 +30,36 @@ class Public_model extends CI_Model
 
     public function get_attendance($start, $end, $dept)
     {
-        $this->db->select('attendance.attendance_date AS attendance_date,
-                           attendance.shift_id AS shift_id,
-                           employee.employee_name AS employee_name,
-                           attendance.in_status AS in_status,
-                           attendance.in_time AS in_time,
-                           attendance.out_time AS out_time,
-                           attendance.out_status AS out_status,
+        $this->db->select('attendance.attendance_id,
+                           attendance.attendance_date,
+                           attendance.shift_id,
+                           employee.employee_name,
+                           attendance.in_status,
+                           attendance.in_time,
+                           attendance.out_time,
+                           attendance.out_status,
                            shift.start_time AS shift_start,
                            shift.end_time AS shift_end');
         $this->db->from('attendance');
-        $this->db->join('employee', 'attendance.employee_id = employee.employee_id');
-        $this->db->join('shift', 'attendance.shift_id = shift.shift_id');
-        $this->db->where('attendance.department_id', $dept);
+        $this->db->join('employee', 'attendance.employee_id = employee.employee_id', 'left');
+        $this->db->join('shift', 'attendance.shift_id = shift.shift_id', 'left');
+
+        if ($dept) {
+            $this->db->where('attendance.department_id', $dept);
+        }
+
         $this->db->where('attendance.attendance_date >=', $start);
         $this->db->where('attendance.attendance_date <=', $end);
+
         $this->db->where('attendance.presence_status', 1);
+
+        // Mengurutkan berdasarkan tanggal presensi
         $this->db->order_by('attendance.attendance_date', 'ASC');
 
         $attendance = $this->db->get()->result_array();
 
         return $attendance;
     }
-
 
     public function getAllEmployeeData($username)
     {
