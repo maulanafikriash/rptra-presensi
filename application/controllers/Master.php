@@ -60,12 +60,12 @@ class Master extends CI_Controller
   private function _addDept()
   {
     // Mengambil data dari form
-    $d_id = $this->input->post('d_id');  
+    $d_id = $this->input->post('d_id');
     $d_name = $this->input->post('d_name');
 
     // ID dalam huruf kapital
     $d_id = strtoupper($d_id);
-    $d_name = ucwords(strtolower($d_name)); 
+    $d_name = ucwords(strtolower($d_name));
 
     $data = [
       'department_id' => $d_id,
@@ -165,7 +165,22 @@ class Master extends CI_Controller
       $this->load->view('master/shift/a_shift', $d); // Add shift Page
       $this->load->view('templates/footer');
     } else {
-      $this->_addShift();
+      // Ambil waktu mulai dan selesai
+      $startTime = $this->input->post('s_start_h') . ':' . $this->input->post('s_start_m') . ':' . $this->input->post('s_start_s');
+      $endTime = $this->input->post('s_end_h') . ':' . $this->input->post('s_end_m') . ':' . $this->input->post('s_end_s');
+
+      // Cek apakah waktu mulai lebih besar dari waktu selesai
+      if (strtotime($startTime) >= strtotime($endTime)) {
+        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+              Waktu mulai tidak boleh lebih dari waktu selesai.</div>');
+        $this->load->view('templates/header', $d);
+        $this->load->view('templates/sidebar');
+        $this->load->view('templates/topbar');
+        $this->load->view('master/shift/a_shift', $d); // Add shift Page
+        $this->load->view('templates/footer');
+      } else {
+        $this->_addShift(); // Jika valid, lanjutkan menambahkan shift
+      }
     }
   }
 
@@ -231,21 +246,36 @@ class Master extends CI_Controller
       $this->load->view('master/shift/e_shift', $d); // Edit shift Page
       $this->load->view('templates/footer');
     } else {
-      // Start Time
-      $sHour = $this->input->post('s_start_h');
-      $sMinutes = $this->input->post('s_start_m');
-      $sSeconds = $this->input->post('s_start_s');
+      // Ambil waktu mulai dan selesai
+      $startTime = $this->input->post('s_start_h') . ':' . $this->input->post('s_start_m') . ':' . $this->input->post('s_start_s');
+      $endTime = $this->input->post('s_end_h') . ':' . $this->input->post('s_end_m') . ':' . $this->input->post('s_end_s');
 
-      // End Time
-      $eHour = $this->input->post('s_end_h');
-      $eMinutes = $this->input->post('s_end_m');
-      $eSeconds = $this->input->post('s_end_s');
+      // Cek apakah waktu mulai lebih besar dari waktu selesai
+      if (strtotime($startTime) >= strtotime($endTime)) {
+        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+              Waktu mulai tidak boleh lebih dari waktu selesai.</div>');
+        $this->load->view('templates/header', $d);
+        $this->load->view('templates/sidebar');
+        $this->load->view('templates/topbar');
+        $this->load->view('master/shift/e_shift', $d);
+        $this->load->view('templates/footer');
+      } else {
+        // Start Time
+        $sHour = $this->input->post('s_start_h');
+        $sMinutes = $this->input->post('s_start_m');
+        $sSeconds = $this->input->post('s_start_s');
 
-      $set = [
-        'start_time' => $sHour . ':' . $sMinutes . ':' . $sSeconds,
-        'end_time' => $eHour . ':' . $eMinutes . ':' . $eSeconds,
-      ];
-      $this->_editShift($s_id, $set);
+        // End Time
+        $eHour = $this->input->post('s_end_h');
+        $eMinutes = $this->input->post('s_end_m');
+        $eSeconds = $this->input->post('s_end_s');
+
+        $set = [
+          'start_time' => $sHour . ':' . $sMinutes . ':' . $sSeconds,
+          'end_time' => $eHour . ':' . $eMinutes . ':' . $eSeconds,
+        ];
+        $this->_editShift($s_id, $set);
+      }
     }
   }
 
@@ -345,6 +375,13 @@ class Master extends CI_Controller
     $image = ($_FILES['image']['name'] && $this->upload->do_upload('image'))
       ? $this->upload->data('file_name') : 'default.png';
 
+    // Validasi format file
+    if ($_FILES['image']['name'] && !$this->upload->do_upload('image')) {
+      $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+          Format file tidak didukung, pastikan formatnya jpg/png/jpeg!</div>');
+      redirect('master/a_employee');
+    }
+
     // Persiapkan data yang akan disimpan
     $data = [
       'employee_name' => $name,
@@ -425,12 +462,16 @@ class Master extends CI_Controller
 
       $this->load->library('upload', $config);
       if ($_FILES['image']['name']) {
-        if ($this->upload->do_upload('image')) {
-          $image = $this->upload->data('file_name');
-          $old_image = $d['employee']['image'];
-          if ($old_image != 'default.png') {
-            unlink('./images/pp/' . $old_image);
-          }
+        if (!$this->upload->do_upload('image')) {
+          // Cek jika upload gagal dan tampilkan pesan error
+          $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                Format file tidak didukung, pastikan formatnya jpg/png/jpeg!</div>');
+          redirect('master/e_employee/' . $e_id); // Arahkan kembali ke halaman edit pegawai
+        }
+        $image = $this->upload->data('file_name');
+        $old_image = $d['employee']['image'];
+        if ($old_image != 'default.png') {
+          unlink('./images/pp/' . $old_image);
         }
       } else {
         $image = $d['employee']['image'];
@@ -770,7 +811,6 @@ class Master extends CI_Controller
       $this->_editUsers($data, $username);
     }
   }
-
 
   private function _editUsers($data, $username)
   {
