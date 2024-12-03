@@ -10,6 +10,9 @@
             </span>
             <span class="text">Kembali</span>
           </a>
+          <div class="col-lg-5">
+            <?= $this->session->flashdata('message'); ?>
+          </div>
 
           <form action="" method="POST" class="col-lg-5  p-0">
             <div class="card">
