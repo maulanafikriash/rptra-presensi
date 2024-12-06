@@ -71,6 +71,13 @@ class Attendance extends CI_Controller
             'attendance_date' => $today
         ])->row_array();
 
+        // Jika ada data presensi, set status
+        if ($attendance) {
+            $d['presence_status'] = $attendance['presence_status'];
+        } else {
+            $d['presence_status'] = null;
+        }
+
         // Validasi presensi keluar otomatis
         $outGracePeriod = strtotime($shiftData['end_time'] . ' +15 minutes');
         if ($currentTime > $outGracePeriod) {

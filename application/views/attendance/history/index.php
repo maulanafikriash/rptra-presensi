@@ -104,6 +104,18 @@
                                     $statusClass = 'success';
                                     break;
                                 case 2:
+                                    $status = 'Izin';
+                                    $statusClass = 'warning';
+                                    break;
+                                case 3:
+                                    $status = 'Sakit';
+                                    $statusClass = 'warning';
+                                    break;
+                                case 4:
+                                    $status = 'Cuti';
+                                    $statusClass = 'dark';
+                                    break;
+                                case 5:
                                     $status = 'Libur';
                                     $statusClass = 'primary';
                                     break;

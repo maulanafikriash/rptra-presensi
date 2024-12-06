@@ -73,17 +73,105 @@
                   </div>
                 </div>
 
-                <!-- Bagian Catatan -->
                 <div class="row justify-content-center mb-3">
                   <div class="col-lg-6 text-center">
                     <hr>
-                    <div class="d-flex justify-content-around">
+                    <div class="d-flex 
+  <?php
+                if (!$already_checked_in) {
+                  // Jika belum check-in
+                  echo 'justify-content-around';
+                } elseif ($presence_status != 1 && $presence_status != 0) {
+                  // Jika status presensi bukan Hadir atau Tidak Hadir
+                  echo 'justify-content-center';
+                } else {
+                  echo 'justify-content-around';
+                }
+  ?>
+">
                       <!-- Tombol Status Presensi -->
                       <div class="text-center mt-3">
-                        <button class="btn <?= $already_checked_in ? 'btn-success' : 'btn-danger' ?> btn-circle" style="font-size: 20px; width: 100px; height: 100px;" disabled>
-                          <i class="fas <?= $already_checked_in ? 'fa-check' : 'fa-times' ?> fa-2x"></i>
+                        <button class="btn 
+    <?php
+                switch ($presence_status) {
+                  case 1: // Hadir
+                    echo 'btn-success';
+                    break;
+                  case 0: // Tidak Hadir
+                    echo 'btn-danger';
+                    break;
+                  case 2: // Izin
+                    echo 'btn-warning';
+                    break;
+                  case 3: // Sakit
+                    echo 'btn-warning';
+                    break;
+                  case 4: // Cuti
+                    echo 'btn-dark';
+                    break;
+                  case 5: // Libur
+                    echo 'btn-primary';
+                    break;
+                  default:
+                    echo 'btn-danger';
+                }
+    ?> 
+    btn-circle" style="font-size: 20px; width: 100px; height: 100px;" disabled>
+                          <i class="fas 
+        <?php
+                switch ($presence_status) {
+                  case 1: // Hadir
+                    echo 'fa-check';
+                    break;
+                  case 0: // Tidak Hadir
+                    echo 'fa-times';
+                    break;
+                  case 2: // Izin
+                    echo 'fa-calendar-day';
+                    break;
+                  case 3: // Sakit
+                    echo 'fa-medkit';
+                    break;
+                  case 4: // Cuti
+                    echo 'fa-calendar-check';
+                    break;
+                  case 5: // Libur
+                    echo 'fa-calendar-times ';
+                    break;
+                  default:
+                    echo 'fa-times';
+                }
+        ?> 
+        fa-2x"></i>
                         </button>
-                        <p class="font-weight-bold <?= $already_checked_in ? 'text-success' : 'text-danger' ?> pt-2"><?= $already_checked_in ? 'Hadir' : 'Tidak Hadir' ?></p>
+
+                        <p class="font-weight-bold <?= $presence_status == 1 ? 'text-success' : ($presence_status == 0 ? 'text-danger' : ($presence_status == 2 ? 'text-warning' : ($presence_status == 3 ? 'text-warning' : ($presence_status == 4 ? 'text-secondary' : ($presence_status == 5 ? 'text-primary' : ''))))) ?> pt-2">
+                          <?php
+                          // Menampilkan status sesuai dengan value presence_status
+                          switch ($presence_status) {
+                            case 1:
+                              echo 'Hadir';
+                              break;
+                            case 0:
+                              echo 'Tidak Hadir';
+                              break;
+                            case 2:
+                              echo 'Izin';
+                              break;
+                            case 3:
+                              echo 'Sakit';
+                              break;
+                            case 4:
+                              echo 'Cuti';
+                              break;
+                            case 5:
+                              echo 'Libur';
+                              break;
+                            default:
+                              echo 'Tidak Ada Data';
+                          }
+                          ?>
+                        </p>
                       </div>
 
                       <!-- Tombol Presensi Masuk/Keluar -->
@@ -105,21 +193,23 @@
 
                         <?php else: ?>
                           <!-- Tombol Presensi Keluar -->
-                          <button type="submit" name="check_out" value="1" class="btn btn-danger btn-circle" id="check-out-btn" style="font-size: 20px; width: 100px; height: 100px;"
-                            <?php if ($already_checked_out || $shift_status != 'sudah selesai' || $auto_checkout_message) echo 'disabled'; ?> disabled>
-                            <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
-                          </button>
+                          <?php if ($presence_status == 1 || $presence_status == 0): ?>
+                            <button type="submit" name="check_out" value="1" class="btn btn-danger btn-circle" id="check-out-btn" style="font-size: 20px; width: 100px; height: 100px;"
+                              <?php if ($already_checked_out || $shift_status != 'sudah selesai' || $auto_checkout_message) echo 'disabled'; ?> disabled>
+                              <i class="fas fa-fw fa-sign-out-alt fa-2x"></i>
+                            </button>
 
-                          <?php if ($already_checked_out): ?>
-                            <p class="text-danger pt-2"><?= $auto_checkout_message ?: 'Sudah Presensi Keluar'; ?></p>
-                          <?php elseif ($shift_status == 'belum mulai'): ?>
-                            <p class="text-warning pt-2">Shift Belum Mulai</p>
-                          <?php elseif ($shift_status != 'sudah selesai'): ?>
-                            <p class="text-danger pt-2" style="font-size: small;">Presensi keluar akan dibuka <br> jika waktu shift sudah selesai.</p>
-                          <?php elseif ($auto_checkout_message): ?>
-                            <p class="text-danger pt-2"><?= $auto_checkout_message; ?></p>
-                          <?php else: ?>
-                            <p class="font-weight-bold text-danger pt-2" id="check-out-status">Presensi Keluar!</p>
+                            <?php if ($already_checked_out): ?>
+                              <p class="text-danger pt-2"><?= $auto_checkout_message ?: 'Sudah Presensi Keluar'; ?></p>
+                            <?php elseif ($shift_status == 'belum mulai'): ?>
+                              <p class="text-danger pt-2">Shift Belum Mulai</p>
+                            <?php elseif ($shift_status != 'sudah selesai'): ?>
+                              <p class="text-danger pt-2" style="font-size: small;">Presensi keluar akan dibuka <br> jika waktu shift sudah selesai.</p>
+                            <?php elseif ($auto_checkout_message): ?>
+                              <p class="text-danger pt-2"><?= $auto_checkout_message; ?></p>
+                            <?php else: ?>
+                              <p class="font-weight-bold text-danger pt-2" id="check-out-status">Presensi Keluar!</p>
+                            <?php endif; ?>
                           <?php endif; ?>
                         <?php endif; ?>
 

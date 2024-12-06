@@ -397,6 +397,15 @@ class Report extends CI_Controller
           $attendance[$date] = 'Tidak Hadir';
           break;
         case 2:
+          $attendance[$date] = 'Izin';
+          break;
+        case 3:
+          $attendance[$date] = 'Sakit';
+          break;
+        case 4:
+          $attendance[$date] = 'Cuti';
+          break;
+        case 5:
           $attendance[$date] = 'Libur';
           break;
         default:
@@ -469,6 +478,15 @@ class Report extends CI_Controller
           $attendance[$date] = 'Tidak Hadir';
           break;
         case 2:
+          $attendance[$date] = 'Izin';
+          break;
+        case 3:
+          $attendance[$date] = 'Sakit';
+          break;
+        case 4:
+          $attendance[$date] = 'Cuti';
+          break;
+        case 5:
           $attendance[$date] = 'Libur';
           break;
         default:

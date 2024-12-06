@@ -59,7 +59,10 @@
                   <select class="form-control" id="presence_status" name="presence_status">
                     <option value="0">Tidak Hadir</option>
                     <option value="1">Hadir</option>
-                    <option value="2">Libur</option>
+                    <option value="2">Izin</option>
+                    <option value="3">Sakit</option>
+                    <option value="4">Cuti</option>
+                    <option value="5">Libur</option>
                   </select>
                 </div>
               </div>
@@ -146,6 +149,14 @@
           setTimeout(() => {
             map.invalidateSize();
           }, 200);
+        }
+
+        function showAlert(message) {
+          Swal.fire({
+            icon: 'info',
+            title: 'Informasi',
+            text: message,
+          });
         }
       </script>
 
