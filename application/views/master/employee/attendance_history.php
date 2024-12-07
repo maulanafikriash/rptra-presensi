@@ -109,21 +109,73 @@
                         if ($currentLoopDate <= $currentDate) {
                             echo "<a href='#' class='float-right' data-target='#editAttendanceModal' data-toggle='modal' data-day='$dayCounter'><i class='fas fa-edit'></i></a><br>";
 
-                            echo "<div class='d-flex flex-column align-items-start'>";
-                            // Tampilkan ikon lokasi presensi masuk
-                            echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Masuk' onclick=\"showMap(" . ($attendance[$dayCounter]['check_in_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_in_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check In')\">
+                            if (isset($attendance[$dayCounter]) && $attendance[$dayCounter]['presence_status'] == 1) {
+
+                                echo "<div class='d-flex justify-content-start align-items-center gap-2'>";
+                                // Tampilkan ikon lokasi presensi masuk
+                                $checkInLocationEmpty = empty($attendance[$dayCounter]['check_in_latitude']) || empty($attendance[$dayCounter]['check_in_longitude']);
+                                if (!$checkInLocationEmpty) {
+                                    echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Masuk' class='mx-1' onclick=\"showMap(" . ($attendance[$dayCounter]['check_in_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_in_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check In')\">
                             <i class='fas fa-map-marker-alt text-success'></i>
                         </a>";
+                                } else {
+                                    echo "<a href='#' class='mx-1' onclick=\"showAlert('Presensi ini dilakukan melalui admin (via admin), sehingga lokasi presensi masuk tidak tersedia.');\">
+                                        <i class='fas fa-map-marker-alt text-success'></i>
+                                    </a>";
+                                }
 
-                            // Tampilkan ikon lokasi presensi keluar
-                            echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out')\">
-                            <i class='fas fa-map-marker-alt text-danger'></i>
-                        </a>";
+                                // Ambil waktu sekarang dan waktu shift berakhir
+                                $current_time = date('H:i:s'); // Waktu sekarang
+                                $shift_end_time = date('H:i:s', strtotime($att['end_time']));
+                                $shift_end_plus_15 = date('H:i:s', strtotime('+15 minutes', strtotime($shift_end_time))); // Waktu akhir shift + 15 menit
+                                // Ambil tanggal sekarang dan tanggal kehadiran
+                                $today = date('Y-m-d');
+                                $attendance_date = $attendance[$dayCounter]['date'] ? $attendance[$dayCounter]['date'] : null;
+
+                                // Periksa apakah kehadiran adalah hari ini
+                                if ($attendance_date === $today) {
+                                    // Skenario 1: Waktu sekarang sebelum akhir shift
+                                    if ($current_time < $shift_end_time) {
+                                        echo "<a href='#' class='mx-1' onclick=\"showAlert('Waktu shift belum berakhir, sehingga pegawai belum dapat melakukan presensi keluar.');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    }
+                                    // Skenario 2: Waktu sekarang sudah lewat akhir shift tetapi belum melakukan presensi keluar, dan masih dalam 15 menit
+                                    elseif ($current_time >= $shift_end_time && $current_time < $shift_end_plus_15 && empty($attendance[$dayCounter]['check_out_latitude']) && empty($attendance[$dayCounter]['check_out_longitude'])) {
+                                        echo "<a href='#' class='mx-1' onclick=\"showAlert('Pegawai belum melakukan presensi keluar, namun masih dalam waktu 15 menit setelah shift berakhir.');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    }
+                                    // Skenario 3: Waktu sudah melewati 15 menit setelah shift berakhir, tetapi pegawai belum presensi keluar
+                                    elseif ($current_time >= $shift_end_plus_15 && empty($attendance[$dayCounter]['check_out_latitude']) && empty($attendance[$dayCounter]['check_out_longitude'])) {
+                                        echo "<a href='#' class='mx-1' onclick=\"showAlert('Pegawai tidak melakukan presensi keluar, sehingga otomatis tercatat pada waktu 15 menit setelah shift berakhir.');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    }
+                                    // Skenario 4: Presensi keluar sudah dilakukan
+                                    elseif (!empty($attendance[$dayCounter]['check_out_latitude']) && !empty($attendance[$dayCounter]['check_out_longitude'])) {
+                                        echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' class='mx-1' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    }
+                                } else {
+                                    // Skenario berlaku jika bukan hari ini (misalnya untuk hari sebelumnya)
+                                    // Skenario 1: Jika pegawai belum melakukan presensi keluar, otomatis tercatat pada waktu 15 menit setelah shift berakhir
+                                    if (empty($attendance[$dayCounter]['check_out_latitude']) && empty($attendance[$dayCounter]['check_out_longitude'])) {
+                                        echo "<a href='#' class='mx-1' onclick=\"showAlert('Pegawai tidak melakukan presensi keluar, sehingga otomatis tercatat pada waktu 15 menit setelah shift berakhir.');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    } else {
+                                        echo "<a href='#' data-target='#mapModal' title='Lihat Lokasi Presensi Keluar' class='mx-1' onclick=\"showMap(" . ($attendance[$dayCounter]['check_out_latitude'] ?? 'null') . ", " . ($attendance[$dayCounter]['check_out_longitude'] ?? 'null') . ", '{$employee['employee_name']} - Check Out');\">
+            <i class='fas fa-map-marker-alt text-danger'></i>
+        </a>";
+                                    }
+                                }
+                            }
                             echo "</div>";
                         }
 
-
-                        // Cek apakah hari ini adalah hari Minggu
+                        // Cek apakah hari ini hari Minggu
                         if (date('w', strtotime($currentLoopDate)) == 0) {
                             echo "<span class='badge badge-primary'>Libur</span>";
                         } else {
@@ -138,6 +190,15 @@
                                         echo "<span class='badge badge-danger'>Tidak Hadir</span>";
                                         break;
                                     case 2:
+                                        echo "<span class='badge badge-warning'>Izin</span>";
+                                        break;
+                                    case 3:
+                                        echo "<span class='badge badge-warning'>Sakit</span>";
+                                        break;
+                                    case 4:
+                                        echo "<span class='badge badge-dark'>Cuti</span>";
+                                        break;
+                                    case 5:
                                         echo "<span class='badge badge-primary'>Libur</span>";
                                         break;
                                     default:
