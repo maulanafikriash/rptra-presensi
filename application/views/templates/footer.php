@@ -154,8 +154,9 @@
         function showAlert(message) {
           Swal.fire({
             icon: 'info',
-            title: 'Informasi',
+            title: 'Info',
             text: message,
+            confirmButtonText: 'OK'
           });
         }
       </script>

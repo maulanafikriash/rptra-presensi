@@ -607,8 +607,9 @@ class Master extends CI_Controller
     $data['year'] = $year;
 
     // Ambil data kehadiran berdasarkan `employee_id`, `month`, dan `year`
-    $this->db->select('attendance_date AS date, presence_status, check_in_latitude, check_in_longitude, check_out_latitude, check_out_longitude');
+    $this->db->select('attendance_date AS date, presence_status, check_in_latitude, check_in_longitude, check_out_latitude, check_out_longitude, shift.end_time');
     $this->db->from('attendance');
+    $this->db->join('shift', 'attendance.shift_id = shift.shift_id', 'left');
     $this->db->where('employee_id', $employee_id);
     $this->db->where('MONTH(attendance_date)', $month);
     $this->db->where('YEAR(attendance_date)', $year);
@@ -620,11 +621,13 @@ class Master extends CI_Controller
       if (isset($att['date'])) {
         $day = (int) date('j', strtotime($att['date']));
         $attendanceData[$day] = [
+          'date' => $att['date'],
           'presence_status' => $att['presence_status'],
           'check_in_latitude' => $att['check_in_latitude'],
           'check_in_longitude' => $att['check_in_longitude'],
           'check_out_latitude' => $att['check_out_latitude'],
-          'check_out_longitude' => $att['check_out_longitude']
+          'check_out_longitude' => $att['check_out_longitude'],
+          'end_time' => $att['end_time']
         ];
       }
     }
