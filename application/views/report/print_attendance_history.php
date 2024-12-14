@@ -31,6 +31,44 @@
         h4 {
             margin: 0;
         }
+
+        /* CSS untuk badge warna */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badge-hadir {
+            background-color: green;
+        }
+
+        .badge-tidak-hadir {
+            background-color: red;
+        }
+
+        .badge-izin {
+            background-color: yellow;
+            color: black;
+        }
+
+        .badge-sakit {
+            background-color: yellow;
+            color: black;
+        }
+
+        .badge-cuti {
+            background-color: black;
+        }
+
+        .badge-libur {
+            background-color: blue;
+        }
+
+        .badge-tidak-ada-data {
+            background-color: gray;
+        }
     </style>
 </head>
 
@@ -51,7 +89,36 @@
             <?php foreach ($attendance as $date => $status) : ?>
                 <tr>
                     <td><?= date('d-m-Y', strtotime($date)); ?></td>
-                    <td><?= $status; ?></td>
+                    <td>
+                        <?php
+                        switch ($status) {
+                            case 'Hadir':
+                                $badgeClass = 'badge-hadir';
+                                break;
+                            case 'Tidak Hadir':
+                                $badgeClass = 'badge-tidak-hadir';
+                                break;
+                            case 'Izin':
+                                $badgeClass = 'badge-izin';
+                                break;
+                            case 'Sakit':
+                                $badgeClass = 'badge-sakit';
+                                break;
+                            case 'Cuti':
+                                $badgeClass = 'badge-cuti';
+                                break;
+                            case 'Libur':
+                                $badgeClass = 'badge-libur';
+                                break;
+                            case 'Tidak Ada Data':
+                                $badgeClass = 'badge-tidak-ada-data';
+                                break;
+                            default:
+                                $badgeClass = '';
+                        }
+                        ?>
+                        <span class="badge <?= $badgeClass; ?>"><?= $status; ?></span>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
