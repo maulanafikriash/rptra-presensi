@@ -5,10 +5,10 @@
         <div class="card-body p-0">
           <div class="text-center pt-4 pb-2 px-3 bg-primary text-white">
             <div class="logo-container">
-              <img src="<?= base_url('images/logo/logo-ppapp.png'); ?>" alt="Company Logo">
+              <img src="<?= base_url('images/logo/logo-rptra.png'); ?>" alt="Company Logo">
             </div>
             <h4 class="font-weight-bold">Sistem Presensi Pegawai</h4>
-            <p class="font-weight-bold">RPTRA Jakarta Timur</p>
+            <p class="font-weight-bold">RPTRA Cibubur Berseri</p>
           </div>
           <div class="p-4">
             <?= $this->session->flashdata('message'); ?>
@@ -43,7 +43,7 @@
               </button>
             </form>
             <div class="text-center mt-3">
-              <small class="text-muted">&copy; <?= date('Y'); ?> RPTRA | Jakarta Timur</small>
+              <small class="text-muted">&copy; <?= date('Y'); ?> RPTRA Cibubur Berseri</small>
             </div>
           </div>
         </div>

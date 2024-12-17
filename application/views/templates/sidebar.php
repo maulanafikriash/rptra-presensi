@@ -10,7 +10,9 @@ $role_id = $this->session->userdata('user_role_id');
     <div class="sidebar-brand-icon">
       <i class="fas fa-user-check"></i>
     </div>
-    <div class="sidebar-brand-text">RPTRA <br> Jakarta Timur</div>
+    <div class="sidebar-brand-text">
+      RPTRA <br> <span style="font-size: 0.8em;">Cibubur Berseri</span>
+    </div>
   </a>
 
   <!-- Query Menu -->
